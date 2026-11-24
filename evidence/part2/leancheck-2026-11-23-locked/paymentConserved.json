@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "lock_sha256": "855d0ae57ca1957ba1663d2b40cb9a2e1d354d5983c471b42c957b5a5c0e3a4d",
+  "module": "Proofs.Retro",
+  "proof": "Proofs.Retro.paymentConserved",
+  "proof_file_sha256": "00b7ebe02e91fb0d7b47f71290a84cfc78c0bbcab3a5635391353e7dab5f3f2e",
+  "replay_reused": [],
+  "replayed_modules": [
+    "Proofs.Retro",
+    "Spec.Retro"
+  ],
+  "statement": "Spec.Retro.paymentConserved",
+  "toolchain": "leanprover/lean4:v4.35.0",
+  "violations": [],
+  "witness": "Proofs.Retro.paymentConserved_witness"
+}

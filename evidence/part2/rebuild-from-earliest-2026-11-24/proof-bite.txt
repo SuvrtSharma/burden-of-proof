@@ -1,0 +1,4 @@
+error: Proofs/Retro.lean:566:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+error: Proofs/Retro.lean:638:4: Type mismatch
+error: Proofs/Retro.lean:639:4: Type mismatch
+error: build failed

@@ -1,0 +1,9 @@
+.git
+.lake
+**/.lake
+.venv
+.local
+**/__pycache__
+*.egg-info
+.pytest_cache
+bench/reports

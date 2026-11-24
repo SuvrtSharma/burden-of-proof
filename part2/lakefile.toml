@@ -1,0 +1,17 @@
+name = "godshand-part2"
+defaultTargets = ["Spec"]
+
+# Part 2's reviewed spec (ADR-0025). Locked by part2/spec.lock.json once the
+# owner approves it; until then it is a draft and no claim against it counts.
+[[lean_lib]]
+name = "Spec"
+
+# Proofs of part 2 claims, added after the spec is locked.
+[[lean_lib]]
+name = "Proofs"
+globs = ["Proofs.+"]
+
+# Running the model on examples (ADR-0025, decision 4). Not part of the spec,
+# and never evidence for a claim on its own.
+[[lean_lib]]
+name = "Explore"

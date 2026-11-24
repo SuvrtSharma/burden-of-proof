@@ -1,0 +1,6 @@
+name = "leancheck"
+defaultTargets = ["leancheck"]
+
+[[lean_exe]]
+name = "leancheck"
+root = "Main"

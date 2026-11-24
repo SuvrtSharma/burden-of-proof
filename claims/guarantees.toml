@@ -1,0 +1,39 @@
+# The guarantee register (ADR-0008, ADR-0020): what the ledger relies on from
+# its platform and its own code, and which rules need each guarantee.
+#
+# `observe` names a check in burden_of_proof/optcheck.py that reads the live
+# database, so a guarantee dropped without being declared is still caught.
+# Owner-reviewed like the spec. Agents propose changes; they don't edit.
+
+[rules.LEDGER-DURABLE-MONEY]
+text = "A bill or payment acknowledged to the client survives a crash or power loss."
+severity = "money"
+
+[rules.LEDGER-BALANCE-IS-DERIVED]
+text = "Every view of a balance agrees with billed minus paid (KT pattern 3)."
+severity = "money"
+
+[rules.LEDGER-SETTLE-OLDEST-FIRST]
+text = "Advances settle a party's open bills, oldest bill date first (ties by bill id), until the bills or the advances run out."
+severity = "money"
+
+[guarantees."sqlite.durable_commit"]
+text = "A committed transaction survives power loss."
+required_by = ["LEDGER-DURABLE-MONEY"]
+observe = "durable_commit"
+source = """https://www.sqlite.org/pragma.html#pragma_synchronous (fetched 2026-11-07): \
+"FULL is ... durable (ACID) in WAL mode"; in rollback mode "FULL is not necessarily durable \
+across a power loss ... it is best to set the synchronous mode to EXTRA"; "A transaction \
+committed in WAL mode with synchronous=NORMAL might roll back following a power loss.\""""
+
+[guarantees."sqlite.atomic_write_txn"]
+text = "Each write runs in one BEGIN IMMEDIATE transaction, so reads and writes inside it see no other writer."
+required_by = ["LEDGER-BALANCE-IS-DERIVED", "LEDGER-SETTLE-OLDEST-FIRST"]
+
+[guarantees."app.derived_balance"]
+text = "Balances are computed from bill and payment rows, never stored."
+required_by = ["LEDGER-BALANCE-IS-DERIVED"]
+
+[guarantees."app.full_open_bill_scan"]
+text = "Settlement reads every open bill of the party."
+required_by = ["LEDGER-SETTLE-OLDEST-FIRST"]

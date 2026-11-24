@@ -1,0 +1,5 @@
+.......................................ss...........                     [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_optcheck.py:45: Spec/Ledger.lean is not locked yet: the owner reviews it and runs `python -m godshand.speclock update --project .`
+SKIPPED [1] tests/test_optcheck.py:53: Spec/Ledger.lean is not locked yet: the owner reviews it and runs `python -m godshand.speclock update --project .`
+50 passed, 2 skipped in 282.97s (0:04:42)

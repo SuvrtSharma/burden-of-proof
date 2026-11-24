@@ -1,0 +1,5 @@
+........................................................................ [ 73%]
+................s.........                                               [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_optcheck.py:74: spec is locked; covered by the accepted case
+97 passed, 1 skipped in 322.80s (0:05:22)

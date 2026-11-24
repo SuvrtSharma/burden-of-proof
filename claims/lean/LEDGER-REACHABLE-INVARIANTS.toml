@@ -1,0 +1,8 @@
+id = "LEDGER-REACHABLE-INVARIANTS"
+kind = "invariant"
+says = "In every state the ledger can reach: ids are unique, increasing and below the next id; every amount is positive; every allocation is positive and links a recorded bill and payment of the same party."
+statement = "Spec.reachableInvariants"
+proof = "Proofs.Ledger.reachableInvariants"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

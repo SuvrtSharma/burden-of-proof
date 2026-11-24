@@ -1,0 +1,1105 @@
+<meta name="dash-one-writer">
+<style>
+  /* Layout: tabbed evidence board; summary line, then one question per tab. */
+  .gh { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+  .gh-head { display: grid; gap: var(--cds-gap-xs); }
+  .gh-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .gh-lede { color: var(--color-fg-muted); margin: 0; max-width: 70ch; }
+  .gh-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+  .gh-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; color: var(--color-fg-muted); cursor: pointer; }
+  .gh-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+  .gh-tab:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .gh-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+  .gh-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .gh-card h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .gh-note { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .gh-tiles { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+  .gh-tile { display: grid; gap: var(--cds-gap-xs); }
+  .gh-tile .gh-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .gh-chart { position: relative; min-height: 14rem; }
+  .gh-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+  .gh-tip .gh-tip-k { color: var(--cds-text-secondary); }
+  .gh-scroll { overflow: auto; max-height: 34rem; }
+  .gh-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .gh-table th, .gh-table td { text-align: left; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .gh-table th { position: sticky; top: 0; background: var(--color-panel); font-weight: var(--cds-font-weight-medium); }
+  .gh-table td.gh-num, .gh-table th.gh-num { text-align: right; }
+  .gh-table code, .gh-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.95em; overflow-wrap: anywhere; }
+  .gh-pill { display: inline-block; padding: 0 var(--cds-pad-xs); border-radius: 999px; border: 1px solid currentColor; font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .gh-ok { color: var(--color-ok); }
+  .gh-bad { color: var(--color-bad); }
+  .gh-warn { color: var(--color-warn); }
+  .gh-muted { color: var(--color-fg-muted); }
+  .gh-pre { margin: 0; white-space: pre; overflow: auto; max-height: 26rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cds-font-size-caption); }
+  .gh-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .gh-sw { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 2px; margin-right: var(--cds-gap-xs); vertical-align: -1px; }
+  .gh-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .gh-ce { display: grid; gap: var(--cds-gap-xs); }
+  .gh-prose { margin: 0; max-width: 72ch; line-height: 1.55; }
+  .gh-prose + .gh-prose { margin-top: var(--cds-gap-xs); }
+  .gh-list { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--cds-gap-xs); max-width: 80ch; line-height: 1.5; }
+  .gh-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); counter-reset: step; }
+  .gh-steps li { counter-increment: step; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: var(--cds-gap-xs); align-content: start; }
+  .gh-steps li::before { content: counter(step); font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); color: var(--color-fg-muted); }
+  .gh-steps li span { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.5; }
+  .gh-dl { margin: 0; display: grid; grid-template-columns: minmax(8rem, max-content) 1fr; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); line-height: 1.5; }
+  .gh-dl dt { font-weight: var(--cds-font-weight-medium); }
+  .gh-dl dd { margin: 0; color: var(--color-fg-muted); }
+  @media (max-width: 34rem) { .gh-dl { grid-template-columns: 1fr; } .gh-dl dd { margin-bottom: var(--cds-gap-xs); } }
+  .gh-claim { border-top: 1px solid var(--color-border-line); padding: var(--cds-pad-sm) 0; }
+  .gh-claim summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: baseline; }
+  .gh-claim summary b { font-weight: var(--cds-font-weight-medium); }
+  .gh-claim-body { display: grid; gap: var(--cds-gap-xs); padding: var(--cds-pad-sm) 0 0 var(--cds-pad-md); }
+  .gh-claim-body .gh-pre { white-space: pre-wrap; max-height: none; background: var(--color-bg, transparent); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm); }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  [data-dash-source-state=empty] { color: transparent; }
+</style>
+
+<div class="gh">
+  <header class="gh-head" id="top">
+    <h1 class="gh-title">Burden of Proof evidence</h1>
+    <p class="gh-lede">Every agent claim about the ledger API was checked for meaning first, and only then timed. The owner ran this from a clean checkout, against a spec they had locked. Each figure here is read from the raw evidence files of one run; open Sources to see the file, its hash and the code that reshapes it.</p>
+    <p class="gh-lede">Run <b class="gh-mono" data-draw="run-id" data-source="bench_env" data-field="value" data-where="key=run_id">—</b> at commit <b class="gh-mono" data-draw="commit" data-source="bench_env" data-field="value" data-where="key=git.commit">—</b>; uncommitted changes: <b data-draw="dirty" data-source="bench_env" data-field="value" data-where="key=git.dirty">—</b>. Measurements expire <b data-draw="expires" data-source="bench_env" data-field="value" data-where="key=expires">—</b>.</p>
+  </header>
+
+  <nav class="gh-tabs" role="tablist" aria-label="Evidence sections">
+    <button class="gh-tab" role="tab" id="tab-guide" aria-controls="guide" aria-selected="true">Start here</button>
+    <button class="gh-tab" role="tab" id="tab-speed" aria-controls="speed" aria-selected="false">Speed</button>
+    <button class="gh-tab" role="tab" id="tab-proofs" aria-controls="proofs" aria-selected="false">Proofs</button>
+    <button class="gh-tab" role="tab" id="tab-meaning" aria-controls="meaning" aria-selected="false">Meaning verdicts</button>
+    <button class="gh-tab" role="tab" id="tab-rigour" aria-controls="rigour" aria-selected="false">Do the checks bite?</button>
+    <button class="gh-tab" role="tab" id="tab-findings" aria-controls="findings" aria-selected="false">Findings and failures</button>
+    <button class="gh-tab" role="tab" id="tab-howmade" aria-controls="howmade" aria-selected="false">How each number was made</button>
+    <button class="gh-tab" role="tab" id="tab-provenance" aria-controls="provenance" aria-selected="false">Environment and provenance</button>
+  </nav>
+
+  <!-- Start here -->
+  <section id="guide" role="tabpanel" aria-labelledby="tab-guide" class="gh">
+    <div class="gh-card" id="what-this-is">
+      <h2>What this page is</h2>
+      <p class="gh-prose">An AI agent built a small ledger API: parties, dated bills, payments, advances (money paid before it is owed) and reversals. Then it proposed six changes to make the API faster. Agents state claims like "this is safe" or "this is faster" with confidence, and some of those claims are wrong. This project checks every claim with a tool before anyone believes it. This page shows every result of one run, including what failed.</p>
+      <p class="gh-prose">Each claim is split in two. <b>Meaning:</b> does the system still give the right answers and keep its rules? That can be checked, with mathematical proof and by comparing the real code with a model. <b>Speed:</b> is it faster? That can only be measured, and measurements are noisy. Meaning is judged first, without any timing. A change that breaks a rule is rejected, however fast it is.</p>
+    </div>
+
+    <div class="gh-card" id="flow">
+      <h2>How a claim is judged</h2>
+      <ol class="gh-steps">
+        <li><b>The claim</b><span>The agent states what it changes and which guarantees it gives up. Each claim is a record in <code class="gh-mono">claims/</code>.</span></li>
+        <li><b>Guarantee check</b><span>The checker opens a live database with the change applied and reads its real settings. If a guarantee is lost and the agent didn't declare it, the claim is rejected.</span></li>
+        <li><b>Lean proof</b><span>A claim that gives up a guarantee needs a proof, in Lean 4, that the ledger's rules still hold. Lean is a proof assistant: a program that checks every step of a mathematical proof.</span></li>
+        <li><b>Conformance</b><span>The real code and a runnable copy of the spec process the same random operations, and they must give the same answer every time. A disagreement is shrunk to the shortest sequence that still fails.</span></li>
+        <li><b>Only then, timing</b><span>Accepted claims are timed in interleaved rounds, against a baseline that is measured again in every round.</span></li>
+      </ol>
+    </div>
+
+    <div class="gh-card" id="conclusion">
+      <h2>What this run shows</h2>
+      <ul class="gh-list">
+        <li><b>The proofs hold.</b> <b data-draw="g-proved" data-source="prove_totals" data-field="verified_of_total">—</b> Lean claims about the ledger passed every check, including two independent proof checkers ("kernels"). They were checked against the spec the owner reviewed and locked.</li>
+        <li><b>The checks can fail.</b> <b data-draw="g-bit" data-source="mutation_totals" data-field="bites_of_total">—</b> deliberate breakages of the checker were each caught by its tests. In the checker container, <b data-draw="g-pass" data-source="test_totals" data-field="passed">—</b> tests passed and <b data-draw="g-fail" data-source="test_totals" data-field="failed">—</b> failed.</li>
+        <li><b>Wrong claims were caught.</b> <b data-draw="g-accepted" data-source="verdict_totals" data-field="accepted_of_total">—</b> optimisation claims were accepted. Capping the scan of open bills was refuted by a Lean proof and by conformance, and nothing proved it safe. WAL with synchronous=NORMAL gave perfect answers but quietly gave up durability, so it was rejected too.</li>
+        <li><b>The speed-up is real, within limits.</b> The accepted changes together ran at <b data-draw="g-speedup" data-source="bench_median" data-field="speedup" data-where="label=ALL-ACCEPTED">—</b> the baseline's median throughput. Some accepted changes, on their own, were inside this machine's noise. That is reported as "no result", not as "slower" (Speed tab).</li>
+        <li><b>The limits.</b> The spec is a model. Comparing the code with it tests samples of behaviour and doesn't prove the SQL. Everything ran on one laptop, in one WSL2 VM, against a ledger the agent wrote. The measurements expire on the date in the header.</li>
+      </ul>
+    </div>
+
+    <div class="gh-card" id="tabs-guide">
+      <h2>How to read each tab</h2>
+      <dl class="gh-dl">
+        <dt>Speed</dt><dd>Throughput and latency of every configuration in every round. Start with "What the speed numbers support": it applies the rule that a configuration counts as faster only if its slowest round beat the baseline's fastest. Lower down: every operation in every round, the warm-up and sanity checks, and why the first run was thrown away.</dd>
+        <dt>Proofs</dt><dd>Each Lean claim in plain English and as the exact Lean statement it was proved against. Also what each of the eight checks guards against, and each claim's result through all of them.</dd>
+        <dt>Meaning verdicts</dt><dd>What the agent said about each optimisation, what the checker observed on a live database, the Lean evidence, conformance against the spec, and the verdict with its reasons. Shrunk counterexamples are at the bottom.</dd>
+        <dt>Do the checks bite?</dt><dd>Each check removed from the tooling in turn, with the exact code change and the tests that caught it. Then every test in the suite, grouped by file.</dd>
+        <dt>Findings and failures</dt><dd>Everything learned, including the agent's own mistakes and the benchmark's failures, with the evidence for each.</dd>
+        <dt>How each number was made</dt><dd>For every figure: the command that produced it, the raw file and field it is read from, and whether this page shows it as recorded or computes it (and how).</dd>
+        <dt>Environment and provenance</dt><dd>The machine, container images, git commit and the SHA-256 fingerprint of every evidence file.</dd>
+      </dl>
+      <p class="gh-note">Every number on this page is read from a raw evidence file when the page opens. Open Sources, beside the page, to see each file, its fingerprint and the code that reshapes it. A number that this page computes (a median, a ratio, a count) is listed there as a calculation, with its code.</p>
+    </div>
+
+    <div class="gh-card" id="glossary">
+      <h2>Words used on this page</h2>
+      <dl class="gh-dl">
+        <dt>Claim</dt><dd>A statement an agent makes about the code that can be checked or measured, such as "adding this index is safe and faster".</dd>
+        <dt>Guarantee</dt><dd>Something the platform provides that the ledger's rules rely on. For example, a committed payment survives a power cut (durable commit).</dd>
+        <dt>Spec</dt><dd>The ledger's rules written in Lean: what a bill, a payment and a settlement are, and what must always hold. The owner reviews and locks it.</dd>
+        <dt>Spec lock</dt><dd>A file of SHA-256 fingerprints of the spec. If anyone, the agent included, changes one character, every proof is rejected until the owner re-approves the spec.</dd>
+        <dt>Kernel</dt><dd>The small core of a proof checker that every proof is finally checked by. Two independent kernels are used here: Lean's own (leanchecker) and con-leche.</dd>
+        <dt>Kernel replay</dt><dd>Re-checking the compiled proofs with a kernel, from scratch. It catches proofs that were added with checking switched off, which a normal build doesn't.</dd>
+        <dt>Axiom</dt><dd>A fact a proof assumes without proof. Only Lean's three standard ones are allowed. Any other axiom could assume the claim itself.</dd>
+        <dt>Vacuity witness</dt><dd>Proof that a claim's assumptions can actually be met. "Every unicorn is green" is true only because there are no unicorns. The witness rules out that kind of empty truth.</dd>
+        <dt>Refutation</dt><dd>A proof that a claim is false.</dd>
+        <dt>Conformance</dt><dd>Running the real code and the compiled spec on the same random operations and comparing every answer.</dd>
+        <dt>Shrinker</dt><dd>Cuts a failing operation sequence down to the shortest one that still fails, so a person can read it.</dd>
+        <dt>Mutation / bites</dt><dd>A mutation deliberately breaks one check. A test "bites" if it then fails. A check whose tests still pass when it is broken protects nothing.</dd>
+        <dt>WAL</dt><dd>Write-ahead logging, a SQLite journal mode that writes changes to a log first. It is usually faster for this kind of load.</dd>
+        <dt>synchronous</dt><dd>SQLite's setting for how often it waits for the disk to confirm a write (fsync). Lower settings are faster, and some of them lose recent commits on a power cut.</dd>
+        <dt>fsync</dt><dd>Asking the operating system to put written data on the disk itself, not only in memory.</dd>
+        <dt>Nagle's algorithm</dt><dd>A TCP setting that holds back small packets. Combined with delayed acknowledgements, it added about 40 ms to each response in the first run (finding F-016). TCP_NODELAY turns it off.</dd>
+        <dt>req/s</dt><dd>Successful requests completed per second of measured time, from the load generator's view.</dd>
+        <dt>p50, p95, p99</dt><dd>Latency percentiles: half, 95% and 99% of requests finished within this time. They are computed by nearest rank over every successful request, with no sampling.</dd>
+        <dt>Round</dt><dd>One pass that runs every configuration once, in a shuffled order. Several rounds show how much results drift on their own.</dd>
+        <dt>Baseline</dt><dd>The ledger before any optimisation, with a durable database setting.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Speed -->
+  <section id="speed" role="tabpanel" aria-labelledby="tab-speed" class="gh" hidden>
+    <div class="gh-tiles">
+      <div class="gh-card gh-tile"><span class="gh-note">Baseline, median req/s</span><span class="gh-big" data-draw="tile-base" data-source="bench_median" data-field="median_rps" data-where="label=baseline">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">All accepted claims, median req/s</span><span class="gh-big" data-draw="tile-all" data-source="bench_median" data-field="median_rps" data-where="label=ALL-ACCEPTED">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Speed-up from accepted claims</span><span class="gh-big" data-draw="tile-speedup" data-source="bench_median" data-field="speedup" data-where="label=ALL-ACCEPTED">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Failed requests, all runs</span><span class="gh-big" data-draw="tile-errors" data-source="bench_totals" data-field="errors">—</span></div>
+    </div>
+
+    <div class="gh-card" id="speed-call">
+      <h2>What the speed numbers support</h2>
+      <p class="gh-note">A configuration counts as faster only if its slowest round beat the baseline's fastest round, and as slower only in the opposite case. Anything in between is inside the noise. This machine's disk stalls writes for seconds at a time (findings F-018, F-026), so the noise is large.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="speed_call" data-row-key="label">
+          <thead><tr><th data-field="label">Configuration</th><th data-field="verdict">Meaning verdict</th><th data-field="rounds">req/s per round</th><th class="gh-num" data-field="median">Median</th><th class="gh-num" data-field="ratio">× baseline</th><th data-field="call">Speed result</th></tr></thead>
+          <tbody data-draw="speed-call-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="throughput">
+      <h2>Throughput by configuration</h2>
+      <p class="gh-note">Bar: median of the repetitions. Dots: each repetition. Rejected claims were measured only to show what speed was on offer; they are not part of "ALL-ACCEPTED".</p>
+      <div class="gh-legend">
+        <span><span class="gh-sw" style="background: var(--cds-chart-muted)"></span>Baseline</span>
+        <span><span class="gh-sw" style="background: var(--gh-accept)"></span>✓ Accepted</span>
+        <span><span class="gh-sw" style="background: var(--cds-chart-status-critical)"></span>✕ Rejected</span>
+        <span><span class="gh-sw" style="background: var(--gh-combined)"></span>All accepted, combined</span>
+      </div>
+      <div class="gh-chart" data-draw="throughput" data-source="bench_median bench_reps verdicts"></div>
+    </div>
+
+    <div class="gh-card" id="method">
+      <h2>How it was measured</h2>
+      <p class="gh-note">Each round ran every configuration once, on a fresh server container with its own volume, in a shuffled order. The baseline was re-measured in every round. The earlier back-to-back baseline from the "before" step is shown for reference only.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="interleave" data-row-key="round">
+          <thead><tr><th data-field="round">Round</th><th data-field="order">Order the configurations ran in</th></tr></thead>
+          <tbody data-draw="interleave-rows"></tbody>
+        </table>
+      </div>
+      <p class="gh-note">Earlier back-to-back baseline, req/s per repetition: <b class="gh-mono" data-draw="before-reps" data-source="before_reps">—</b></p>
+      <p class="gh-note">Load settings of this run, as recorded. <code class="gh-mono">threads</code>: concurrent clients. <code class="gh-mono">seconds</code>: measured time per repetition, after an unmeasured warm-up of <code class="gh-mono">warmup_seconds</code>. <code class="gh-mono">parties</code> and <code class="gh-mono">bills_per_party</code>: the data seeded into each fresh server before it is measured. The operation mix is balance 45%, open bills 15%, bill 20%, payment 15%, reverse 5% (<code class="gh-mono">MIX</code> in bench/loadgen.py).</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="bench_env" data-row-key="key">
+          <thead><tr><th data-field="key">Setting</th><th data-field="value">Value</th></tr></thead>
+          <tbody data-draw="load-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="sanity">
+      <h2>Warm-up and sanity check, per configuration</h2>
+      <p class="gh-note">Before each configuration is measured, its fresh server is warmed up and the result is thrown away. The sanity check fails a configuration if its fastest balance-read median is above the floor. A slower trivial read would mean the run measured the network rather than the database, as the first run did.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="bench_runs" data-row-key="label">
+          <thead><tr><th data-field="label">Configuration</th><th data-field="config_changes">Settings changed from the baseline</th><th data-field="warmup">Warm-up per round (seconds, successful requests)</th><th class="gh-num" data-field="balance_p50_min_ms">Fastest balance p50, ms</th><th class="gh-num" data-field="floor_ms">Floor, ms</th><th data-field="sanity_ok">Sanity</th></tr></thead>
+          <tbody data-draw="run-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-grid">
+      <div class="gh-card" id="latency">
+        <h2>p99 latency by operation</h2>
+        <p class="gh-note">Median over repetitions of each repetition's exact 99th percentile (nearest rank over every successful request), in milliseconds.</p>
+        <div class="gh-scroll">
+          <table class="gh-table" data-source="bench_ops_median" data-row-key="label">
+            <thead><tr><th data-field="label">Configuration</th><th class="gh-num" data-field="balance">balance</th><th class="gh-num" data-field="open_bills">open bills</th><th class="gh-num" data-field="bill">bill</th><th class="gh-num" data-field="payment">payment</th><th class="gh-num" data-field="reverse">reverse</th></tr></thead>
+            <tbody data-draw="latency-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="gh-card" id="timeline">
+        <h2>Successful requests per second</h2>
+        <p class="gh-note">One line per repetition, so stalls and warm-up effects stay visible. The last second is partial.</p>
+        <div class="gh-controls"><select class="dash-select" id="timeline-config" aria-label="Configuration" data-draw="timeline-choice" data-source="bench_median"></select></div>
+        <div class="gh-legend">
+          <span><span class="gh-sw" style="background: var(--gh-rep1)"></span>Round 1</span>
+          <span><span class="gh-sw" style="background: var(--gh-rep2)"></span>Round 2</span>
+          <span><span class="gh-sw" style="background: var(--gh-rep3)"></span>Round 3</span>
+        </div>
+        <div class="gh-chart" data-draw="timeline" data-source="bench_timeline"></div>
+      </div>
+    </div>
+
+    <div class="gh-card" id="reps">
+      <h2>Every repetition</h2>
+      <p class="gh-note">Raw per-repetition results. The samples file holds every request (operation, status, start, latency) and is identified by its SHA-256.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="bench_reps" data-row-key="label,rep">
+          <thead><tr><th data-field="label">Configuration</th><th class="gh-num" data-field="rep">Rep</th><th class="gh-num" data-field="requests">Requests</th><th class="gh-num" data-field="errors">Errors</th><th class="gh-num" data-field="throughput_rps">req/s</th><th class="gh-num" data-field="p50_ms">p50 ms</th><th class="gh-num" data-field="p95_ms">p95 ms</th><th class="gh-num" data-field="p99_ms">p99 ms</th><th class="gh-num" data-field="max_ms">max ms</th><th data-field="samples_sha256">Samples SHA-256</th></tr></thead>
+          <tbody data-draw="rep-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="ops-all">
+      <h2>Every operation, every round</h2>
+      <p class="gh-note">The raw per-operation figures behind the p99 table, as recorded for each repetition. Choose a configuration to compare its rounds. Latency is in milliseconds.</p>
+      <div class="gh-controls"><select class="dash-select" id="ops-config" aria-label="Configuration" data-draw="ops-choice" data-source="bench_median"></select></div>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="bench_ops" data-row-key="label,rep,op">
+          <thead><tr><th data-field="rep" class="gh-num">Round</th><th data-field="op">Operation</th><th class="gh-num" data-field="ok">Successful</th><th class="gh-num" data-field="errors">Errors</th><th class="gh-num" data-field="throughput_rps">req/s</th><th class="gh-num" data-field="p50_ms">p50</th><th class="gh-num" data-field="p95_ms">p95</th><th class="gh-num" data-field="p99_ms">p99</th><th class="gh-num" data-field="max_ms">max</th></tr></thead>
+          <tbody data-draw="ops-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="run1">
+      <h2>Why the first run was thrown away</h2>
+      <p class="gh-note">Run 1 left Nagle's algorithm on. Every small response waited for the client's delayed ACK, so median latency sat near 45 ms for nearly every operation in every configuration, and it measured TCP rather than the database. A controlled experiment confirmed it; run 1 is kept as evidence, not used.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="nagle" data-row-key="mode,trial">
+          <thead><tr><th data-field="mode">Server setting</th><th class="gh-num" data-field="trial">Trial</th><th class="gh-num" data-field="rps">req/s</th><th class="gh-num" data-field="balance_p50_ms">balance p50 ms</th><th class="gh-num" data-field="open_p50_ms">open bills p50 ms</th><th class="gh-num" data-field="payment_p50_ms">payment p50 ms</th></tr></thead>
+          <tbody data-draw="nagle-rows"></tbody>
+        </table>
+      </div>
+      <p class="gh-note">Run 1's baseline balance-read p50, per repetition: <b class="gh-mono" data-draw="run1-balance" data-source="run1_ops">—</b> ms.</p>
+    </div>
+
+    <div class="gh-card" id="profile">
+      <h2>Where the baseline spends its time</h2>
+      <p class="gh-note">cProfile of the baseline store in the checker container, sorted by time spent in each function itself. Measured before any optimisation was accepted.</p>
+      <pre class="gh-pre" data-draw="profile" data-source="profile"></pre>
+    </div>
+  </section>
+
+  <!-- Proofs -->
+  <section id="proofs" role="tabpanel" aria-labelledby="tab-proofs" class="gh" hidden>
+    <div class="gh-tiles">
+      <div class="gh-card gh-tile"><span class="gh-note">Claims verified</span><span class="gh-big" data-draw="p-ok" data-source="prove_totals" data-field="verified_of_total">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Spec lock (owner approval)</span><span class="gh-big gh-mono" style="font-size: var(--cds-font-size-heading)" data-draw="p-lock" data-source="prove_totals" data-field="lock">—</span></div>
+    </div>
+    <div class="gh-card" id="claim-text">
+      <h2>What each claim says</h2>
+      <p class="gh-note">Open a claim to see its exact Lean statement, quoted from <code class="gh-mono">Spec/Ledger.lean</code> at the lines shown. The proof had to prove exactly that statement. "Invariant" claims hold in every state the ledger can reach from any sequence of operations. "Property" claims are about one function or one step. The spec's terms: <code class="gh-mono">run ops</code> is the ledger state after the operations <code class="gh-mono">ops</code>; <code class="gh-mono">outstanding</code> is what a bill still owes; <code class="gh-mono">advance</code> is what is left of a payment; <code class="gh-mono">matchUp</code> pairs open bills with advances, oldest bill first.</p>
+      <div data-draw="claim-text" data-source="catalog_lean prove"></div>
+    </div>
+
+    <div class="gh-card" id="checks-explained">
+      <h2>What each check guards against</h2>
+      <dl class="gh-dl">
+        <dt>1. Spec lock</dt><dd>The spec is the one the owner approved. Without it, an agent could prove a claim by quietly weakening the rule.</dd>
+        <dt>2. Build</dt><dd>The spec and the proofs compile with the pinned Lean version.</dd>
+        <dt>3. Shape</dt><dd>The statement is a proposition defined in the spec, built only from the spec, and the proof's type is exactly that statement. This stops a proof of something else, or of a copy of the rule defined outside the spec.</dd>
+        <dt>4. Axioms</dt><dd>The proof assumes nothing beyond Lean's three standard axioms. An extra axiom, or <code class="gh-mono">sorry</code>, would assume the result.</dd>
+        <dt>5. No foreign code</dt><dd>Nothing marked <code class="gh-mono">unsafe</code>, <code class="gh-mono">implemented_by</code> or <code class="gh-mono">extern</code>. These let compiled code differ from what was proved.</dd>
+        <dt>6. Vacuity witness</dt><dd>A separate proof that the claim's assumptions can be met, so the claim isn't true only because nothing satisfies them. A refutation (a proof of "false") doesn't need one.</dd>
+        <dt>7. Kernel replay</dt><dd>Lean's own kernel re-checks every compiled proof. This is the check that caught a forged theorem built with kernel checking switched off. That forgery passed the build and <code class="gh-mono">#print axioms</code>.</dd>
+        <dt>8. Second kernel</dt><dd>An independent kernel (con-leche) checks the same proofs, so one kernel bug isn't enough to fool the pipeline.</dd>
+      </dl>
+    </div>
+
+    <div class="gh-card" id="claims">
+      <h2>Every Lean claim, through every check</h2>
+      <p class="gh-note">Each claim must pass, in order:</p>
+      <ol class="gh-note">
+        <li>the spec lock;</li>
+        <li>the build;</li>
+        <li>statement and proof shape;</li>
+        <li>axioms limited to propext, Classical.choice and Quot.sound;</li>
+        <li>no unsafe or foreign code;</li>
+        <li>a vacuity witness, where the statement has hypotheses;</li>
+        <li>kernel replay (leanchecker);</li>
+        <li>an independent second kernel (con-leche).</li>
+      </ol>
+      <p class="gh-note">Any violation code would appear in the last column.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="prove" data-row-key="id">
+          <thead><tr><th data-field="id">Claim</th><th data-field="accepted">Verified</th><th data-field="statement">Statement</th><th data-field="axioms">Axioms used</th><th data-field="witness">Vacuity witness</th><th data-field="replayed">Kernel replay</th><th class="gh-num" data-field="seconds">Seconds</th><th data-field="violations">Violations</th></tr></thead>
+          <tbody data-draw="prove-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meaning -->
+  <section id="meaning" role="tabpanel" aria-labelledby="tab-meaning" class="gh" hidden>
+    <div class="gh-card" id="verdicts">
+      <h2>Verdict on each claim</h2>
+      <p class="gh-note">Decided before any timing, by the guarantee check on a live database, Lean proofs where a claim drops a guarantee, and conformance of the real store to the compiled spec over random operation sequences.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="verdicts" data-row-key="id">
+          <thead><tr><th data-field="id">Claim</th><th data-field="kind">Kind</th><th data-field="verdict">Verdict</th><th data-field="reasons">Reasons</th><th data-field="agent_says">What the agent said</th><th class="gh-num" data-field="operations">Ops checked</th><th class="gh-num" data-field="mismatches">Mismatching sequences</th><th data-field="durable">Durable commit (observed)</th></tr></thead>
+          <tbody data-draw="verdict-rows"></tbody>
+        </table>
+      </div>
+      <p class="gh-note">Lean evidence about the ledger counts only after the owner locks the spec. Spec locked in this run: <b data-draw="locked" data-source="verdict_env" data-field="value" data-where="key=spec_locked">—</b>.</p>
+    </div>
+
+    <div class="gh-card" id="verdict-detail">
+      <h2>Each optimisation in full</h2>
+      <p class="gh-note">Open one to see everything the checker used: the claim record, the settings it changes, what it declared it gives up, the database settings observed with and without it, the Lean statements behind it, the conformance run, and each reason for the verdict in full.</p>
+      <div data-draw="verdict-detail" data-source="verdict_detail catalog_opts"></div>
+    </div>
+
+    <div class="gh-card" id="counterexamples">
+      <h2>Shrunk counterexamples</h2>
+      <p class="gh-note">The shortest operation sequence the shrinker found where the store and the spec disagree, and what each returned at the last operation.</p>
+      <div data-draw="counterexamples" data-source="counterexamples"></div>
+    </div>
+  </section>
+
+  <!-- Rigour -->
+  <section id="rigour" role="tabpanel" aria-labelledby="tab-rigour" class="gh" hidden>
+    <div class="gh-tiles">
+      <div class="gh-card gh-tile"><span class="gh-note">Tests passed</span><span class="gh-big" data-draw="t-pass" data-source="test_totals" data-field="passed">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Tests failed</span><span class="gh-big" data-draw="t-fail" data-source="test_totals" data-field="failed">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Tests skipped</span><span class="gh-big" data-draw="t-skip" data-source="test_totals" data-field="skipped">—</span></div>
+      <div class="gh-card gh-tile"><span class="gh-note">Mutations that bit</span><span class="gh-big" data-draw="m-bit" data-source="mutation_totals" data-field="bites_of_total">—</span></div>
+    </div>
+
+    <div class="gh-card" id="mutations">
+      <h2>Does each check bite?</h2>
+      <p class="gh-note">Each row removes one check from the tooling and runs the tests that guard it. "Bites" means those tests failed. Files were restored byte-for-byte after each one.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="mutations" data-row-key="mutation">
+          <thead><tr><th data-field="mutation">Mutation</th><th data-field="scope">Part of the tooling</th><th data-field="result">Result</th><th data-field="summary">Test output</th><th data-source="catalog_mutations" data-field="file">File changed</th><th data-source="catalog_mutations" data-field="find">Code removed</th><th data-source="catalog_mutations" data-field="replace">Replaced with</th><th data-source="catalog_mutations" data-field="tests">Tests run (pytest -k)</th></tr></thead>
+          <tbody data-draw="mutation-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="tests-by-file">
+      <h2>Tests by file</h2>
+      <p class="gh-note">Counts of the test cases below, grouped by test file. The skipped test is listed with its reason in the next table.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="test_files" data-row-key="file">
+          <thead><tr><th data-field="file">Test file</th><th class="gh-num" data-field="passed">Passed</th><th class="gh-num" data-field="failed">Failed</th><th class="gh-num" data-field="skipped">Skipped</th><th class="gh-num" data-field="seconds">Seconds</th></tr></thead>
+          <tbody data-draw="test-file-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gh-card" id="tests">
+      <h2>Test suite in the checker container</h2>
+      <p class="gh-note">From the JUnit report written by pytest inside the Linux checker image in this run.</p>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="tests" data-row-key="test">
+          <thead><tr><th data-field="test">Test</th><th data-field="outcome">Outcome</th><th class="gh-num" data-field="seconds">Seconds</th><th data-field="message">Message</th></tr></thead>
+          <tbody data-draw="test-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Findings -->
+  <section id="findings" role="tabpanel" aria-labelledby="tab-findings" class="gh" hidden>
+    <div class="gh-card" id="findings-log">
+      <h2>What we learned, including what went wrong</h2>
+      <p class="gh-note">Failures, dead ends and the agent's own mistakes are recorded with the same weight as successes. Kinds: finding, failure, mistake, and caught (a wrong claim the tooling rejected).</p>
+      <div class="gh-controls"><select class="dash-select" id="finding-kind" aria-label="Kind" data-draw="finding-kinds" data-source="findings"></select></div>
+      <div class="gh-scroll">
+        <table class="gh-table" data-source="findings" data-row-key="id">
+          <thead><tr><th data-field="id">Id</th><th data-field="date">Date</th><th data-field="kind">Kind</th><th data-field="title">Finding</th><th data-field="expected">Expected</th><th data-field="observed">Observed</th><th data-field="impact">What changed</th><th data-field="evidence">Evidence</th></tr></thead>
+          <tbody data-draw="finding-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- How each number was made -->
+  <section id="howmade" role="tabpanel" aria-labelledby="tab-howmade" class="gh" hidden>
+    <div class="gh-card" id="howmade-intro">
+      <h2>How each number was made</h2>
+      <p class="gh-prose">Every figure on this page starts as a file that a command wrote during the run. The page reads those files when it opens. It either shows a value as recorded, or computes it in a calculation whose code is listed in Sources. Nothing is typed in by hand, apart from the findings log, which is written by people and says so below. The commands are the ones in <code class="gh-mono">docs/RUNBOOK.md</code>, run by the owner from a clean checkout.</p>
+      <p class="gh-prose">Timing ran in two containers on separate CPUs: the API server on CPUs 0–3, the load generator on CPUs 4–7. Each configuration got a fresh server and its own database volume, seeded with the same data. The load generator ran a fixed mix of operations from several threads for a fixed time and recorded every request: its operation, status, start time and latency. All figures come from those records.</p>
+      <p class="gh-prose">Meaning ran in the checker container, with no timing involved. For each claim: the database settings were read from a live database with the change applied, the Lean evidence went through the same pipeline as the Proofs tab, and the real store and the compiled spec processed the same seeded random operation sequences (their counts and seed are in Meaning verdicts).</p>
+    </div>
+    <div class="gh-card" id="howmade-table">
+      <h2>Figure by figure</h2>
+      <div class="gh-scroll">
+        <table class="gh-table">
+          <thead><tr><th>Figure</th><th>Where on this page</th><th>Produced by</th><th>Raw file</th><th>Field</th><th>How this page shows it</th></tr></thead>
+          <tbody>
+            <tr><td>Requests, errors, req/s, p50/p95/p99/max per round</td><td>Speed: Every repetition</td><td class="gh-mono">python3 bench/docker_run.py after --each (bench/loadgen.py runs in its own container)</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].overall</td><td>As recorded</td></tr>
+            <tr><td>Latency and req/s per operation</td><td>Speed: Every operation, every round</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].by_op</td><td>As recorded</td></tr>
+            <tr><td>p99 latency by operation</td><td>Speed: p99 table</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].by_op[].p99_ms</td><td>Calculation bench_ops_median: median over rounds of each round's p99</td></tr>
+            <tr><td>Median req/s, × baseline, tiles and bar chart</td><td>Speed</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].overall.throughput_rps</td><td>Calculation bench_median: median over rounds; ratio to the baseline's median</td></tr>
+            <tr><td>Speed result (faster / slower / inside the noise)</td><td>Speed: What the speed numbers support</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json, verdicts.json</td><td class="gh-mono">throughput_rps per round; verdict</td><td>Calculation speed_call: compares the slowest and fastest rounds with the baseline's</td></tr>
+            <tr><td>Failed requests, all runs</td><td>Speed: tile</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].overall.errors</td><td>Calculation bench_totals: sum</td></tr>
+            <tr><td>Successful requests per second</td><td>Speed: line chart</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].reps[].ok_per_second</td><td>As recorded</td></tr>
+            <tr><td>Round order</td><td>Speed: How it was measured</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">interleaved_order</td><td>As recorded</td></tr>
+            <tr><td>Load settings</td><td>Speed: How it was measured</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">load</td><td>As recorded</td></tr>
+            <tr><td>Warm-up and sanity check</td><td>Speed: Warm-up and sanity check</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">runs[].warmup, runs[].sanity, runs[].config_changes</td><td>As recorded</td></tr>
+            <tr><td>Earlier back-to-back baseline</td><td>Speed: How it was measured</td><td class="gh-mono">python3 bench/docker_run.py before</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">before_runs</td><td>As recorded</td></tr>
+            <tr><td>Nagle experiment</td><td>Speed: Why the first run was thrown away</td><td class="gh-mono">A one-off experiment on 2026-11-07. Only its printed output was kept; the script that produced it is not in the repository.</td><td class="gh-mono">evidence/nagle-experiment-2026-11-07.txt</td><td class="gh-mono">one line per trial</td><td>Parsed line by line</td></tr>
+            <tr><td>Run 1 balance p50</td><td>Speed: Why the first run was thrown away</td><td class="gh-mono">the native runner of run 1 (marked invalid)</td><td class="gh-mono">evidence/20261107T090049Z/benchmark.json</td><td class="gh-mono">runs[baseline].reps[].by_op.balance.p50_ms</td><td>As recorded</td></tr>
+            <tr><td>Baseline profile</td><td>Speed: Where the baseline spends its time</td><td class="gh-mono">python3 bench/docker_run.py check (cProfile of the baseline store)</td><td class="gh-mono">evidence/20261114T210922Z/verdicts.json</td><td class="gh-mono">profile_baseline</td><td>As recorded</td></tr>
+            <tr><td>Verdicts, reasons, observed durability, conformance counts</td><td>Meaning verdicts</td><td class="gh-mono">python3 bench/docker_run.py check (burden_of_proof/optcheck.py, burden_of_proof/differential.py)</td><td class="gh-mono">evidence/20261114T210922Z/verdicts.json</td><td class="gh-mono">verdicts[]</td><td>As recorded</td></tr>
+            <tr><td>Shrunk counterexamples</td><td>Meaning verdicts</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/verdicts.json</td><td class="gh-mono">verdicts[].evidence.conformance.shrunk_counterexample</td><td>As recorded</td></tr>
+            <tr><td>Accepted optimisation claims</td><td>Start here</td><td class="gh-mono">same</td><td class="gh-mono">evidence/20261114T210922Z/verdicts.json</td><td class="gh-mono">verdicts[].verdict</td><td>Calculation verdict_totals: count</td></tr>
+            <tr><td>Lean claims through every check</td><td>Proofs</td><td class="gh-mono">python -m burden_of_proof prove --out (in the checker container)</td><td class="gh-mono">evidence/prove-2026-11-15.json</td><td class="gh-mono">one object per claim</td><td>As recorded; calculation prove_totals counts the accepted ones</td></tr>
+            <tr><td>Claim text and Lean statements</td><td>Proofs: What each claim says; Meaning: Each optimisation in full</td><td class="gh-mono">python tools/claims_catalog.py --out evidence/claims-catalog.json (reads Spec/Ledger.lean, claims/ and tools/mutate.py)</td><td class="gh-mono">evidence/claims-catalog.json</td><td class="gh-mono">lean_claims[], optimisations[]</td><td>Quoted verbatim; a test checks the quotes match the spec</td></tr>
+            <tr><td>Mutations</td><td>Do the checks bite?</td><td class="gh-mono">python tools/mutate.py --out (in the checker container)</td><td class="gh-mono">evidence/mutations-2026-11-15.json</td><td class="gh-mono">rows[]</td><td>As recorded; calculation mutation_totals counts the ones that bit</td></tr>
+            <tr><td>What each mutation changes</td><td>Do the checks bite?</td><td class="gh-mono">python tools/claims_catalog.py (copies tools/mutate.py's MUTATIONS list)</td><td class="gh-mono">evidence/claims-catalog.json</td><td class="gh-mono">mutations[]</td><td>As written in the tool</td></tr>
+            <tr><td>Test results</td><td>Do the checks bite?</td><td class="gh-mono">python3 bench/docker_run.py before (pytest --junitxml in the checker container)</td><td class="gh-mono">evidence/20261114T210922Z/tests.xml</td><td class="gh-mono">testcase elements</td><td>As recorded; calculations test_totals and test_files count them</td></tr>
+            <tr><td>Findings</td><td>Findings and failures</td><td class="gh-mono">Written by hand, by the agent and the owner, as each thing was learned. Each entry names its evidence.</td><td class="gh-mono">evidence/findings.json</td><td class="gh-mono">findings[]</td><td>As recorded</td></tr>
+            <tr><td>Environment, git commit</td><td>Header; Environment and provenance</td><td class="gh-mono">python3 bench/docker_run.py (recorded inside WSL2)</td><td class="gh-mono">evidence/20261114T210922Z/benchmark.json</td><td class="gh-mono">run_id, git, environment, expires</td><td>As recorded</td></tr>
+            <tr><td>Evidence fingerprints</td><td>Environment and provenance</td><td class="gh-mono">python3 bench/docker_run.py writes it; python3 bench/verify_manifest.py re-checks it</td><td class="gh-mono">evidence/20261114T210922Z/manifest.json</td><td class="gh-mono">files</td><td>As recorded</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="gh-note">"same" repeats the command in the row above. Medians use the middle value of the sorted rounds, or the mean of the middle two if there's an even number of them. Percentiles are nearest rank: the value at position ceil(n × q / 100) of the sorted latencies (<code class="gh-mono">percentile</code> in bench/loadgen.py).</p>
+    </div>
+  </section>
+
+  <!-- Provenance -->
+  <section id="provenance" role="tabpanel" aria-labelledby="tab-provenance" class="gh" hidden>
+    <div class="gh-grid">
+      <div class="gh-card" id="environment">
+        <h2>Environment of this run</h2>
+        <p class="gh-note">Recorded by the orchestrator inside WSL2. Server and load generator ran in separate containers on separate CPUs.</p>
+        <div class="gh-scroll">
+          <table class="gh-table" data-source="bench_env" data-row-key="key">
+            <thead><tr><th data-field="key">Item</th><th data-field="value">Value</th></tr></thead>
+            <tbody data-draw="env-rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="gh-card" id="manifest">
+        <h2>Evidence files and their hashes</h2>
+        <p class="gh-note">SHA-256 of every file the run wrote, from its manifest. Re-hash the files in the repository to check them.</p>
+        <div class="gh-scroll">
+          <table class="gh-table" data-source="manifest" data-row-key="file">
+            <thead><tr><th data-field="file">File</th><th data-field="sha256">SHA-256</th></tr></thead>
+            <tbody data-draw="manifest-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  /* ---------- loaders: reshape the raw evidence files into rows (no arithmetic) ---------- */
+  const ENV_ROW = (key, value) => ({ key, value: value === null || value === undefined ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value) });
+
+  dash.loader('bench_reps', {
+    description: 'benchmark.json: one row per configuration and repetition, the overall figures as recorded',
+    fn: ({ answer }) => answer.runs.flatMap((run) => run.reps.map((r, i) => ({
+      label: run.label, rep: i + 1, requests: r.overall.requests, ok: r.overall.ok, errors: r.overall.errors,
+      throughput_rps: r.overall.throughput_rps, p50_ms: r.overall.p50_ms, p95_ms: r.overall.p95_ms,
+      p99_ms: r.overall.p99_ms, max_ms: r.overall.max_ms, seconds: r.seconds,
+      samples_file: r.samples_file || '', samples_sha256: r.samples_sha256 || '',
+    }))),
+  });
+  dash.loader('bench_ops', {
+    description: 'benchmark.json: one row per configuration, repetition and operation, as recorded',
+    fn: ({ answer }) => answer.runs.flatMap((run) => run.reps.flatMap((r, i) => Object.entries(r.by_op).map(([op, s]) => ({
+      label: run.label, rep: i + 1, op, ok: s.ok, errors: s.errors, throughput_rps: s.throughput_rps,
+      p50_ms: s.p50_ms, p95_ms: s.p95_ms, p99_ms: s.p99_ms, max_ms: s.max_ms,
+    })))),
+  });
+  dash.loader('bench_timeline', {
+    description: 'benchmark.json: successful requests started in each second of each repetition',
+    fn: ({ answer }) => answer.runs.flatMap((run) => run.reps.flatMap((r, i) => r.ok_per_second.map((n, sec) => ({
+      label: run.label, rep: i + 1, second: sec, ok: n,
+    })))),
+  });
+  dash.loader('bench_env', {
+    description: 'benchmark.json: run id, git state, environment and load settings as key/value rows',
+    fn: ({ answer }) => [
+      ENV_ROW('run_id', answer.run_id), ENV_ROW('started_at', answer.started_at), ENV_ROW('expires', answer.expires),
+      ENV_ROW('git.commit', answer.git.commit), ENV_ROW('git.dirty', answer.git.dirty), ENV_ROW('git.dirty_files', answer.git.dirty_files.join(', ')),
+      ...Object.entries(answer.environment).map(([k, v]) => ENV_ROW('environment.' + k, v)),
+      ...Object.entries(answer.load).map(([k, v]) => ENV_ROW('load.' + k, v)),
+      ENV_ROW('baseline_config', answer.baseline_config),
+      ENV_ROW('tests.exit_code', answer.tests.exit_code), ENV_ROW('tests.summary', answer.tests.summary),
+    ],
+  });
+  dash.loader('verdicts', {
+    description: 'verdicts.json: one row per optimisation claim, with its verdict and the evidence behind it',
+    fn: ({ answer }) => answer.verdicts.map((v) => ({
+      id: v.id, title: v.title, kind: v.kind, verdict: v.verdict, agent_says: v.agent_says,
+      reasons: v.reasons.map((r) => r.code).join(', '),
+      declared_drops: v.declared_drops.join(', '),
+      operations: v.evidence.conformance.operations, sequences: v.evidence.conformance.sequences,
+      mismatches: v.evidence.conformance.mismatches,
+      durable: String(v.evidence.observed.candidate.held['sqlite.durable_commit']),
+      journal_mode: v.evidence.observed.candidate.pragmas.journal_mode,
+      synchronous: v.evidence.observed.candidate.pragmas.synchronous,
+      lean: (v.evidence.compensations || []).map((c) => `${c.statement}: ${c.accepted ? 'accepted' : 'not accepted (' + c.violations.join(', ') + ')'}`).join('; '),
+      check_seconds: v.check_seconds,
+    })),
+  });
+  dash.loader('bench_runs', {
+    description: 'benchmark.json: one row per configuration, with the settings it changes, its warm-ups and its sanity check, as recorded',
+    fn: ({ answer }) => answer.runs.map((run) => ({
+      label: run.label, config_changes: Object.keys(run.config_changes || {}).length ? JSON.stringify(run.config_changes) : 'none (baseline)',
+      warmup: (run.warmup || []).map((w) => `${w.seconds.toFixed(1)} s, ${w.ok}`).join(' · '),
+      balance_p50_min_ms: run.sanity.balance_p50_min_ms, floor_ms: run.sanity.floor_ms, sanity_ok: run.sanity.ok,
+    })),
+  });
+  dash.loader('verdict_detail', {
+    description: 'verdicts.json: everything recorded about each optimisation claim, unflattened',
+    fn: ({ answer }) => answer.verdicts.map((v) => ({
+      id: v.id, title: v.title, kind: v.kind, verdict: v.verdict, agent_says: v.agent_says,
+      config: JSON.stringify(v.config), declared_drops: v.declared_drops.join(', ') || 'none',
+      reasons: JSON.stringify(v.reasons, null, 1), observed: JSON.stringify(v.evidence.observed, null, 1),
+      compensations: JSON.stringify(v.evidence.compensations || [], null, 1),
+      sequences: v.evidence.conformance.sequences, operations: v.evidence.conformance.operations,
+      mismatches: v.evidence.conformance.mismatches, seed: v.evidence.conformance.seed,
+      notes: (v.evidence.conformance.notes || []).join('; '), check_seconds: v.check_seconds,
+    })),
+  });
+  dash.loader('catalog_lean', {
+    description: 'claims-catalog.json (python tools/claims_catalog.py): each Lean claim record with its statement quoted from Spec/Ledger.lean',
+    fn: ({ answer }) => answer.lean_claims.map((c) => ({ id: c.id, kind: c.kind, says: c.says, doc: c.doc, statement: c.statement, proof: c.proof, lean: c.lean, spec_lines: c.spec_lines.join('–'), file: c.file })),
+  });
+  dash.loader('catalog_opts', {
+    description: 'claims-catalog.json: each optimisation claim record, with the Lean text of the statements it relies on',
+    fn: ({ answer }) => answer.optimisations.map((c) => ({ id: c.id, file: c.file, drops: c.drops.join(', ') || 'none',
+      compensated_by: c.compensated_by.map((x) => `${x.rule} → ${x.statement}\n${x.lean}`).join('\n\n'),
+      refuted_by: c.refuted_by ? c.refuted_by.statement : '' })),
+  });
+  dash.loader('catalog_mutations', {
+    description: 'claims-catalog.json: each mutation as tools/mutate.py defines it (file, code removed, replacement, tests run)',
+    fn: ({ answer }) => answer.mutations.map((m) => ({ mutation: m.mutation, file: m.file, find: m.find.trim(), replace: m.replace.trim(), tests: m.tests })),
+  });
+  dash.loader('counterexamples', {
+    description: 'verdicts.json: the shrunk counterexample of each claim that disagreed with the spec',
+    fn: ({ answer }) => answer.verdicts.filter((v) => v.evidence.conformance.shrunk_counterexample).map((v) => {
+      const ce = v.evidence.conformance.shrunk_counterexample;
+      return { id: v.id, operations: ce.ops.length, ops: JSON.stringify(ce.ops), model: JSON.stringify(ce.model), store: JSON.stringify(ce.store) };
+    }),
+  });
+  dash.loader('verdict_env', {
+    description: 'verdicts.json: where and how the verdicts were computed',
+    fn: ({ answer }) => [ENV_ROW('generated_at', answer.generated_at), ENV_ROW('spec_locked', answer.spec_locked),
+      ENV_ROW('seconds', answer.seconds), ...Object.entries(answer.environment).map(([k, v]) => ENV_ROW(k, v))],
+  });
+  dash.loader('profile', {
+    description: 'verdicts.json: the cProfile text of the baseline, one row per line',
+    fn: ({ answer }) => answer.profile_baseline.split('\n').map((text, line) => ({ line: line + 1, text })),
+  });
+  dash.loader('tests', {
+    description: 'tests.xml (JUnit from pytest): one row per test case',
+    fn: ({ answer }) => {
+      const doc = new DOMParser().parseFromString(answer, 'application/xml');
+      return [...doc.querySelectorAll('testcase')].map((tc) => {
+        const bad = tc.querySelector('failure, error');
+        const skip = tc.querySelector('skipped');
+        return {
+          test: `${tc.getAttribute('classname')}::${tc.getAttribute('name')}`,
+          outcome: bad ? 'failed' : skip ? 'skipped' : 'passed',
+          seconds: Number(tc.getAttribute('time')),
+          message: (bad || skip)?.getAttribute('message') || '',
+        };
+      });
+    },
+  });
+  const SCOPES = { M: 'Lean check pipeline', N: 'Lean check pipeline (added checks)', R: 'Vacuity guard: refutations', D: 'Optimisation checker, store, server, load generator' };
+  dash.loader('mutations', {
+    description: 'mutations-2026-11-15.json (python tools/mutate.py --out, in the checker container): one row per mutation',
+    fn: ({ answer }) => answer.rows.map((r) => ({ mutation: r.mutation, scope: SCOPES[r.mutation[0]] || '', result: r.result, summary: r.summary })),
+  });
+  dash.loader('findings', {
+    description: 'findings.json: one row per finding, failure or mistake',
+    fn: ({ answer }) => answer.findings.map((f) => ({ id: f.id, date: f.date, kind: f.kind, title: f.title, expected: f.expected, observed: f.observed, impact: f.impact, evidence: f.evidence.join(' · ') })),
+  });
+  dash.loader('nagle', {
+    description: 'nagle-experiment-2026-11-07.txt: one row per line of the experiment’s printed output',
+    fn: ({ answer }) => String(answer).replace(/^﻿/, '').split(/\r?\n/).filter((l) => /trial/.test(l)).map((l) => {
+      const m = l.match(/^(\S+) trial (\d+) rps ([\d.]+) p50 ([\d.]+) \| balance p50 ([\d.]+) open p50 ([\d.]+) payment p50 ([\d.]+)/);
+      return { mode: m[1] === 'nodelay' ? 'TCP_NODELAY' : 'Nagle on', trial: Number(m[2]), rps: Number(m[3]), p50_ms: Number(m[4]), balance_p50_ms: Number(m[5]), open_p50_ms: Number(m[6]), payment_p50_ms: Number(m[7]) };
+    }),
+  });
+  dash.loader('run1_ops', {
+    description: 'Run 1 (invalid) benchmark.json: baseline per-operation figures per repetition, as recorded',
+    fn: ({ answer }) => answer.runs.filter((run) => run.label === 'baseline').flatMap((run) => run.reps.flatMap((r, i) => Object.entries(r.by_op).map(([op, s]) => ({ rep: i + 1, op, p50_ms: s.p50_ms })))),
+  });
+  dash.loader('prove', {
+    description: 'prove-2026-11-15.json (python -m burden_of_proof prove --out): one row per Lean claim',
+    fn: ({ answer }) => answer.map((r) => ({ id: r.id, accepted: r.accepted, statement: r.statement, axioms: (r.axioms || []).join(', ') || 'none',
+      witness: r.witness || 'not needed', replayed: (r.replayed_modules || []).join(', '), seconds: r.seconds,
+      violations: (r.violations || []).map((v) => v.code).join(', '), lock: r.lock_sha256 })),
+  });
+  dash.loader('before_reps', {
+    description: 'benchmark.json: the earlier back-to-back baseline (the before step), per repetition',
+    fn: ({ answer }) => answer.before_runs.flatMap((run) => run.reps.map((r, i) => ({ label: run.label, rep: i + 1, throughput_rps: r.overall.throughput_rps }))),
+  });
+  dash.loader('interleave', {
+    description: 'benchmark.json: the shuffled order the configurations ran in, per round',
+    fn: ({ answer }) => (answer.interleaved_order || []).map((order, i) => ({ round: i + 1, order: order.join(' → ') })),
+  });
+  dash.loader('manifest', {
+    description: 'manifest.json: every evidence file of the run and its SHA-256',
+    fn: ({ answer }) => Object.entries(answer.files).map(([file, sha256]) => ({ file, sha256 })),
+  });
+
+  /* ---------- calculations: everything computed is shown as a calculation ---------- */
+  dash.calc('bench_median', {
+    title: 'Median req/s per configuration',
+    description: 'Median of the repetitions’ throughput for each configuration, and the ratio to the baseline’s median.',
+    inputs: ['bench_reps'],
+    fn: (bench_reps) => {
+      const labels = [...new Set(bench_reps.map((r) => r.label))];
+      const med = (l) => { const s = bench_reps.filter((r) => r.label === l).map((r) => r.throughput_rps).sort((a, b) => a - b); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+      const base = med('baseline');
+      return labels.map((label) => ({ label, median_rps: med(label), speedup: med(label) / base, reps: bench_reps.filter((r) => r.label === label).length }));
+    },
+  });
+  dash.calc('speed_call', {
+    title: 'Speed result per configuration',
+    description: 'Faster in every round if the slowest round beat the baseline\u2019s fastest round; slower in every round in the opposite case; otherwise inside the noise.',
+    inputs: ['bench_reps', 'verdicts'],
+    fn: (bench_reps, verdicts) => {
+      const of = (l) => bench_reps.filter((r) => r.label === l).map((r) => r.throughput_rps);
+      const med = (xs) => { const s = [...xs].sort((a, b) => a - b); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+      const base = of('baseline');
+      const bmin = Math.min(...base), bmax = Math.max(...base), bmed = med(base);
+      const verdictOf = (l) => l === 'baseline' ? 'baseline' : l === 'ALL-ACCEPTED' ? 'accepted set' : ((verdicts.find((v) => v.id === l) || {}).verdict || '');
+      return [...new Set(bench_reps.map((r) => r.label))].filter((l) => l !== 'baseline').map((label) => {
+        const xs = of(label);
+        const call = Math.min(...xs) > bmax ? 'faster in every round' : Math.max(...xs) < bmin ? 'slower in every round' : 'inside the noise';
+        return { label, verdict: verdictOf(label), rounds: xs.join(', '), median: med(xs), ratio: med(xs) / bmed, call };
+      });
+    },
+  });
+  dash.calc('bench_ops_median', {
+    title: 'Median p99 per operation',
+    description: 'For each configuration and operation, the median over repetitions of that repetition’s p99 latency in ms.',
+    inputs: ['bench_ops'],
+    fn: (bench_ops) => {
+      const labels = [...new Set(bench_ops.map((r) => r.label))];
+      const ops = [...new Set(bench_ops.map((r) => r.op))];
+      const med = (xs) => { const s = [...xs].sort((a, b) => a - b); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+      return labels.map((label) => Object.fromEntries([['label', label], ...ops.map((op) => [op, med(bench_ops.filter((r) => r.label === label && r.op === op).map((r) => r.p99_ms))])]));
+    },
+  });
+  dash.calc('bench_totals', {
+    title: 'Failed requests in all runs',
+    description: 'Sum of failed requests over every configuration and repetition.',
+    inputs: ['bench_reps'],
+    fn: (bench_reps) => [{ errors: bench_reps.reduce((a, r) => a + r.errors, 0), requests: bench_reps.reduce((a, r) => a + r.requests, 0) }],
+  });
+  dash.calc('test_totals', {
+    title: 'Test outcomes',
+    description: 'Count of test cases by outcome in the JUnit report.',
+    inputs: ['tests'],
+    fn: (tests) => [{ passed: tests.filter((t) => t.outcome === 'passed').length, failed: tests.filter((t) => t.outcome === 'failed').length, skipped: tests.filter((t) => t.outcome === 'skipped').length }],
+  });
+  dash.calc('prove_totals', {
+    title: 'Claims verified',
+    description: 'How many Lean claims the full pipeline accepted, out of all of them, and the spec lock they were checked against.',
+    inputs: ['prove'],
+    fn: (prove) => [{ verified_of_total: `${prove.filter((r) => r.accepted).length} of ${prove.length}`, lock: (prove[0] || {}).lock ? prove[0].lock.slice(0, 16) + '…' : '' }],
+  });
+  dash.calc('verdict_totals', {
+    title: 'Optimisation claims accepted',
+    description: 'How many optimisation claims the meaning check accepted, out of all of them.',
+    inputs: ['verdicts'],
+    fn: (verdicts) => [{ accepted_of_total: `${verdicts.filter((v) => v.verdict === 'accept').length} of ${verdicts.length}` }],
+  });
+  dash.calc('test_files', {
+    title: 'Tests by file',
+    description: 'Test cases in the JUnit report, counted by outcome per test file, with their total seconds.',
+    inputs: ['tests'],
+    fn: (tests) => {
+      const fileOf = (t) => t.test.split('::')[0];
+      return [...new Set(tests.map(fileOf))].map((file) => {
+        const mine = tests.filter((t) => fileOf(t) === file);
+        const n = (o) => mine.filter((t) => t.outcome === o).length;
+        return { file, passed: n('passed'), failed: n('failed'), skipped: n('skipped'), seconds: mine.reduce((a, t) => a + t.seconds, 0) };
+      });
+    },
+  });
+  dash.calc('mutation_totals', {
+    title: 'Mutations that bit',
+    description: 'How many mutations made their guarding tests fail, out of all mutations run.',
+    inputs: ['mutations'],
+    fn: (mutations) => [{ bites_of_total: `${mutations.filter((m) => m.result === 'BITES').length} of ${mutations.length}` }],
+  });
+
+  /* ---------- tabs ---------- */
+  const TABS = ['guide', 'speed', 'proofs', 'meaning', 'rigour', 'findings', 'howmade', 'provenance'];
+  const show = (id) => {
+    document.querySelectorAll('.gh-tab').forEach((t) => t.setAttribute('aria-selected', String(t.getAttribute('aria-controls') === id)));
+    document.querySelectorAll('section[role=tabpanel]').forEach((s) => { s.hidden = s.id !== id; });
+    dash.setLink(id);
+  };
+  document.querySelectorAll('.gh-tab').forEach((t) => t.addEventListener('click', () => show(t.getAttribute('aria-controls'))));
+  const named = location.hash.slice(1);
+  if (TABS.includes(named)) show(named);
+
+  /* ---------- helpers for drawings ---------- */
+  const fmtInt = d3.format(',');
+  const fmt1 = d3.format(',.1f');
+  const fmt3 = d3.format(',.3f');
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const okData = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+  const failLine = (el, ids) => {
+    if (ids.some((id) => dash.data(id).status === 'error')) {
+      const p = document.createElement('p');
+      p.className = 'gh-note';
+      p.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:inherit';
+      const dot = document.createElement('span');
+      dot.style.cssText = 'width:.375rem;height:.375rem;border-radius:50%;background:var(--color-bad)';
+      p.append(dot, 'Failed to load');
+      el.replaceChildren(p);
+      return true;
+    }
+    return false;
+  };
+  const setValue = (name, id, pick, format) => dash.draw(name, (el) => {
+    const rows = okData(id);
+    const v = rows ? pick(rows) : undefined;
+    el.textContent = v === undefined || v === null || v === '' ? '—' : format ? format(v) : String(v);
+  });
+  const envValue = (rows, key) => (rows.find((r) => r.key === key) || {}).value;
+  const verdictOf = (label) => {
+    if (label === 'baseline') return 'baseline';
+    if (label === 'ALL-ACCEPTED') return 'combined';
+    const v = (okData('verdicts') || []).find((r) => r.id === label);
+    return v ? v.verdict : 'unknown';
+  };
+  const colorFor = (verdict) => verdict === 'baseline' ? css('--cds-chart-muted') : verdict === 'accept' ? (dash.colors[0]) : verdict === 'combined' ? (dash.colors[1]) : css('--cds-chart-status-critical');
+  document.querySelectorAll('.gh').forEach((root) => { root.style.setProperty('--gh-accept', dash.colors[0]); root.style.setProperty('--gh-combined', dash.colors[1]); root.style.setProperty('--gh-rep1', dash.colors[0]); root.style.setProperty('--gh-rep2', dash.colors[1]); root.style.setProperty('--gh-rep3', dash.colors[2]); });
+  const td = (text, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; c.textContent = text; return c; };
+  const pill = (text, cls) => { const s = document.createElement('span'); s.className = 'gh-pill ' + cls; s.textContent = text; return s; };
+
+  /* ---------- header values ---------- */
+  setValue('run-id', 'bench_env', (r) => envValue(r, 'run_id'));
+  setValue('commit', 'bench_env', (r) => envValue(r, 'git.commit'));
+  setValue('dirty', 'bench_env', (r) => envValue(r, 'git.dirty') === 'true' ? 'yes' : 'no');
+  setValue('expires', 'bench_env', (r) => envValue(r, 'expires'));
+  setValue('locked', 'verdict_env', (r) => envValue(r, 'spec_locked') === 'true' ? 'yes' : 'no');
+
+  /* ---------- start here ---------- */
+  setValue('g-proved', 'prove_totals', (r) => r[0].verified_of_total);
+  setValue('g-bit', 'mutation_totals', (r) => r[0].bites_of_total);
+  setValue('g-pass', 'test_totals', (r) => r[0].passed, fmtInt);
+  setValue('g-fail', 'test_totals', (r) => r[0].failed, fmtInt);
+  setValue('g-accepted', 'verdict_totals', (r) => r[0].accepted_of_total);
+  setValue('g-speedup', 'bench_median', (r) => (r.find((x) => x.label === 'ALL-ACCEPTED') || {}).speedup, (v) => d3.format('.2f')(v) + '×');
+
+  /* ---------- tiles ---------- */
+  setValue('tile-base', 'bench_median', (r) => (r.find((x) => x.label === 'baseline') || {}).median_rps, fmt1);
+  setValue('tile-all', 'bench_median', (r) => (r.find((x) => x.label === 'ALL-ACCEPTED') || {}).median_rps, fmt1);
+  setValue('tile-speedup', 'bench_median', (r) => (r.find((x) => x.label === 'ALL-ACCEPTED') || {}).speedup, (v) => d3.format('.2f')(v) + '×');
+  setValue('tile-errors', 'bench_totals', (r) => r[0].errors, fmtInt);
+  setValue('t-pass', 'test_totals', (r) => r[0].passed, fmtInt);
+  setValue('t-fail', 'test_totals', (r) => r[0].failed, fmtInt);
+  setValue('t-skip', 'test_totals', (r) => r[0].skipped, fmtInt);
+  setValue('m-bit', 'mutation_totals', (r) => r[0].bites_of_total);
+
+  /* ---------- throughput chart: median bars + each repetition as a dot ---------- */
+  dash.draw('throughput', (el) => {
+    const med = okData('bench_median');
+    const reps = okData('bench_reps');
+    if (failLine(el, ['bench_median', 'bench_reps'])) return;
+    if (!med || !reps) { el.replaceChildren(); return; }
+    const width = el.clientWidth || 600;
+    const rowH = 30;
+    const labels = med.map((r) => r.label);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${labels.length * rowH + 44}`).attr('role', 'img').attr('aria-label', 'Throughput by configuration');
+    el.replaceChildren(svg.node());  // attached first, so label widths can be measured as drawn
+    const measure = svg.append('g');
+    const widest = d3.max(labels, (l) => { const t = measure.append('text').style('font-size', '12px').text('✓ ' + l); const w = t.node().getComputedTextLength(); return w; });
+    measure.remove();
+    const left = widest + 16;
+    const maxX = d3.max([...med.map((r) => r.median_rps), ...reps.map((r) => r.throughput_rps)]);
+    const x = d3.scaleLinear([0, maxX * 1.12], [left, width - 64]);
+    const y = d3.scaleBand(labels, [8, labels.length * rowH + 8]).padding(0.28);
+    svg.append('g').selectAll('line').data(x.ticks(5)).join('line').attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', 4).attr('y2', labels.length * rowH + 10).attr('stroke', css('--cds-chart-grid'));
+    svg.append('g').attr('transform', `translate(0,${labels.length * rowH + 10})`).call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('~s'))).attr('font-size', null).attr('font-family', null)
+      .call((g) => { g.select('.domain').attr('stroke', css('--cds-chart-axis')); g.selectAll('text').attr('fill', css('--color-fg-muted')).style('font-size', '11px'); g.selectAll('line').attr('stroke', css('--cds-chart-axis')); });
+    svg.append('g').selectAll('text').data(labels).join('text').attr('x', left - 8).attr('y', (l) => y(l) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('fill', css('--color-fg')).style('font-size', '12px')
+      .text((l) => (verdictOf(l) === 'accept' ? '✓ ' : verdictOf(l) === 'reject' ? '✕ ' : '') + l);
+    svg.append('g').selectAll('rect').data(med).join('rect').attr('x', x(0)).attr('y', (d) => y(d.label)).attr('height', y.bandwidth()).attr('width', (d) => Math.max(0, x(d.median_rps) - x(0))).attr('rx', 3).attr('fill', (d) => colorFor(verdictOf(d.label))).attr('opacity', 0.85);
+    svg.append('g').selectAll('circle').data(reps).join('circle').attr('cx', (d) => x(d.throughput_rps)).attr('cy', (d) => y(d.label) + y.bandwidth() / 2).attr('r', 4).attr('fill', css('--color-panel')).attr('stroke', css('--color-fg')).attr('stroke-width', 1.5);
+    svg.append('g').selectAll('text').data(med).join('text').attr('x', (d) => x(d.median_rps) + 8).attr('y', (d) => y(d.label) + y.bandwidth() / 2).attr('dy', '0.35em').attr('fill', css('--color-fg-muted')).style('font-size', '11px').text((d) => fmt1(d.median_rps));
+    const tip = document.createElement('div');
+    tip.className = 'gh-tip';
+    tip.hidden = true;
+    svg.append('g').selectAll('rect').data(med).join('rect').attr('x', 0).attr('width', width).attr('y', (d) => y(d.label) - 4).attr('height', y.bandwidth() + 8).attr('fill', 'transparent')
+      .on('mousemove', (event, d) => {
+        const mine = reps.filter((r) => r.label === d.label);
+        tip.replaceChildren();
+        const head = document.createElement('div'); head.className = 'gh-tip-k'; head.textContent = d.label + ' · ' + verdictOf(d.label); tip.append(head);
+        const m = document.createElement('div'); m.textContent = `median ${fmt1(d.median_rps)} req/s · ${d3.format('.2f')(d.speedup)}× baseline`; tip.append(m);
+        mine.forEach((r) => { const line = document.createElement('div'); line.textContent = `rep ${r.rep}: ${fmt1(r.throughput_rps)} req/s, p99 ${fmt3(r.p99_ms)} ms, errors ${fmtInt(r.errors)}`; tip.append(line); });
+        tip.hidden = false;
+        const [px, py] = d3.pointer(event, el);
+        tip.style.left = Math.min(px + 12, el.clientWidth - tip.offsetWidth - 4) + 'px';
+        tip.style.top = (py + 12) + 'px';
+      })
+      .on('mouseleave', () => { tip.hidden = true; });
+    el.replaceChildren(svg.node(), tip);
+  });
+
+  /* ---------- speed result ---------- */
+  dash.draw('speed-call-rows', (tb) => {
+    const rows = okData('speed_call');
+    const cls = { 'faster in every round': 'gh-ok', 'slower in every round': 'gh-bad', 'inside the noise': 'gh-muted' };
+    tb.replaceChildren(...(rows || []).map((r) => {
+      const tr = document.createElement('tr');
+      const v = document.createElement('td');
+      v.append(pill(r.verdict === 'accept' ? '✓ accepted' : r.verdict === 'reject' ? '✕ rejected' : r.verdict, r.verdict === 'reject' ? 'gh-bad' : 'gh-ok'));
+      const c = document.createElement('td'); c.append(pill(r.call, cls[r.call]));
+      tr.append(td(r.label), v, td(r.rounds, 'gh-mono'), td(fmt1(r.median), 'gh-num'), td(d3.format('.2f')(r.ratio) + '×', 'gh-num'), c);
+      return tr;
+    }));
+  });
+
+  /* ---------- latency table ---------- */
+  dash.draw('latency-rows', (tb) => {
+    const rows = okData('bench_ops_median');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(r.label), td(fmt3(r.balance), 'gh-num'), td(fmt3(r.open_bills), 'gh-num'), td(fmt3(r.bill), 'gh-num'), td(fmt3(r.payment), 'gh-num'), td(r.reverse === undefined ? '' : fmt3(r.reverse), 'gh-num')); return tr; }));
+  });
+
+  /* ---------- timeline ---------- */
+  dash.draw('timeline-choice', (sel) => {
+    const rows = okData('bench_median') || [];
+    const current = sel.value || 'baseline';
+    sel.replaceChildren(...rows.map((r) => new Option(r.label, r.label)));
+    sel.value = rows.some((r) => r.label === current) ? current : (rows[0] || {}).label || '';
+    sel.onchange = () => dash.draw('timeline');
+  });
+  dash.draw('timeline', (el) => {
+    const rows = okData('bench_timeline');
+    if (failLine(el, ['bench_timeline'])) return;
+    const sel = document.getElementById('timeline-config');
+    const label = (sel && sel.value) || 'baseline';
+    const mine = (rows || []).filter((r) => r.label === label);
+    if (!mine.length) { el.replaceChildren(); return; }
+    const width = el.clientWidth || 500, height = 220, m = { l: 48, r: 24, t: 14, b: 28 };
+    const reps = [...new Set(mine.map((r) => r.rep))];
+    const x = d3.scaleLinear(d3.extent(mine, (r) => r.second), [m.l, width - m.r]);
+    const y = d3.scaleLinear([0, d3.max(mine, (r) => r.ok) * 1.1], [height - m.b, m.t]);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img').attr('aria-label', 'Requests per second for ' + label);
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', width - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', css('--cds-chart-grid'));
+    const axisStyle = (g) => { g.attr('font-size', null).attr('font-family', null); g.select('.domain').attr('stroke', css('--cds-chart-axis')); g.selectAll('text').attr('fill', css('--color-fg-muted')).style('font-size', '11px'); g.selectAll('line').attr('stroke', css('--cds-chart-axis')); };
+    svg.append('g').attr('transform', `translate(0,${height - m.b})`).call(d3.axisBottom(x).ticks(6).tickFormat((d) => d + ' s')).call(axisStyle);
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s'))).call(axisStyle);
+    const line = d3.line().x((r) => x(r.second)).y((r) => y(r.ok));
+    reps.forEach((rep, i) => {
+      const pts = mine.filter((r) => r.rep === rep);
+      svg.append('path').attr('d', line(pts)).attr('fill', 'none').attr('stroke', dash.colors[i % dash.colors.length]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    });
+    el.replaceChildren(svg.node());
+  });
+
+  /* ---------- per-rep table ---------- */
+  dash.draw('rep-rows', (tb) => {
+    const rows = okData('bench_reps');
+    tb.replaceChildren(...(rows || []).map((r) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = `${encodeURIComponent(r.label)},${r.rep}`;
+      const sha = td(r.samples_sha256 ? r.samples_sha256.slice(0, 16) + '…' : '', 'gh-mono');
+      sha.title = r.samples_file + ' ' + r.samples_sha256;
+      tr.append(td(r.label), td(String(r.rep), 'gh-num'), td(fmtInt(r.requests), 'gh-num'), td(fmtInt(r.errors), 'gh-num'), td(fmt1(r.throughput_rps), 'gh-num'), td(fmt3(r.p50_ms), 'gh-num'), td(fmt3(r.p95_ms), 'gh-num'), td(fmt3(r.p99_ms), 'gh-num'), td(fmt3(r.max_ms), 'gh-num'), sha);
+      return tr;
+    }));
+  });
+
+  /* ---------- proofs ---------- */
+  setValue('p-ok', 'prove_totals', (r) => r[0].verified_of_total);
+  setValue('p-lock', 'prove_totals', (r) => r[0].lock);
+  dash.draw('prove-rows', (tb) => {
+    const rows = okData('prove');
+    tb.replaceChildren(...(rows || []).map((r) => {
+      const tr = document.createElement('tr');
+      const ok = document.createElement('td');
+      ok.append(pill(r.accepted ? '✓ verified' : '✕ not verified', r.accepted ? 'gh-ok' : 'gh-bad'));
+      tr.append(td(r.id), ok, td(r.statement, 'gh-mono'), td(r.axioms, 'gh-mono'), td(r.witness, 'gh-mono'), td(r.replayed, 'gh-mono'), td(fmt1(r.seconds), 'gh-num'), td(r.violations || 'none'));
+      return tr;
+    }));
+  });
+
+  /* ---------- load settings, sanity, every operation ---------- */
+  dash.draw('load-rows', (tb) => {
+    const rows = (okData('bench_env') || []).filter((r) => r.key.startsWith('load.'));
+    tb.replaceChildren(...rows.map((r) => { const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.key); tr.append(td(r.key.slice(5), 'gh-mono'), td(r.value, 'gh-mono')); return tr; }));
+  });
+  dash.draw('run-rows', (tb) => {
+    const rows = okData('bench_runs');
+    tb.replaceChildren(...(rows || []).map((r) => {
+      const tr = document.createElement('tr');
+      const s = document.createElement('td'); s.append(pill(r.sanity_ok ? '✓ passed' : '✕ failed', r.sanity_ok ? 'gh-ok' : 'gh-bad'));
+      tr.append(td(r.label), td(r.config_changes, 'gh-mono'), td(r.warmup, 'gh-mono'), td(fmt3(r.balance_p50_min_ms), 'gh-num'), td(fmt1(r.floor_ms), 'gh-num'), s);
+      return tr;
+    }));
+  });
+  dash.draw('ops-choice', (sel) => {
+    const rows = okData('bench_median') || [];
+    const current = sel.value || 'baseline';
+    sel.replaceChildren(...rows.map((r) => new Option(r.label, r.label)));
+    sel.value = rows.some((r) => r.label === current) ? current : (rows[0] || {}).label || '';
+    sel.onchange = () => dash.draw('ops-rows');
+  });
+  dash.draw('ops-rows', (tb) => {
+    const sel = document.getElementById('ops-config');
+    const label = (sel && sel.value) || 'baseline';
+    const rows = (okData('bench_ops') || []).filter((r) => r.label === label);
+    tb.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = `${encodeURIComponent(r.label)},${r.rep},${encodeURIComponent(r.op)}`;
+      tr.append(td(String(r.rep), 'gh-num'), td(r.op), td(fmtInt(r.ok), 'gh-num'), td(fmtInt(r.errors), 'gh-num'), td(fmt1(r.throughput_rps), 'gh-num'),
+        td(fmt3(r.p50_ms), 'gh-num'), td(fmt3(r.p95_ms), 'gh-num'), td(fmt3(r.p99_ms), 'gh-num'), td(fmt3(r.max_ms), 'gh-num'));
+      return tr;
+    }));
+  });
+
+  /* ---------- claim text and optimisation detail ---------- */
+  const para = (label, text, mono) => {
+    const wrap = document.createElement('div');
+    const l = document.createElement('div'); l.className = 'gh-note'; l.textContent = label;
+    const v = document.createElement(mono ? 'pre' : 'p');
+    v.className = mono ? 'gh-pre' : 'gh-prose';
+    v.textContent = text;
+    wrap.append(l, v);
+    return wrap;
+  };
+  dash.draw('claim-text', (el) => {
+    if (failLine(el, ['catalog_lean', 'prove'])) return;
+    const rows = okData('catalog_lean');
+    const prove = okData('prove') || [];
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...rows.map((c) => {
+      const res = prove.find((r) => r.id === c.id);
+      const d = document.createElement('details'); d.className = 'gh-claim';
+      const s = document.createElement('summary');
+      const name = document.createElement('b'); name.textContent = c.id;
+      s.append(name, pill(c.kind, 'gh-muted'), res ? pill(res.accepted ? '✓ verified' : '✕ not verified', res.accepted ? 'gh-ok' : 'gh-bad') : pill('no result', 'gh-warn'));
+      const says = document.createElement('span'); says.className = 'gh-muted'; says.textContent = c.says; s.append(says);
+      const body = document.createElement('div'); body.className = 'gh-claim-body';
+      body.append(para('In the spec\u2019s own words (its doc comment)', c.doc),
+        para(`Lean statement, Spec/Ledger.lean lines ${c.spec_lines}`, c.lean, true),
+        para('Proved by', `${c.proof}  (claim record: ${c.file})`, true));
+      if (res) body.append(para('Checked', `axioms: ${res.axioms}\nvacuity witness: ${res.witness}\nkernel replay of: ${res.replayed}\nseconds: ${fmt1(res.seconds)}\nviolations: ${res.violations || 'none'}`, true));
+      d.append(s, body);
+      return d;
+    }));
+  });
+  dash.draw('verdict-detail', (el) => {
+    if (failLine(el, ['verdict_detail', 'catalog_opts'])) return;
+    const rows = okData('verdict_detail');
+    const cat = okData('catalog_opts') || [];
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...rows.map((v) => {
+      const c = cat.find((x) => x.id === v.id) || {};
+      const d = document.createElement('details'); d.className = 'gh-claim';
+      const s = document.createElement('summary');
+      const name = document.createElement('b'); name.textContent = v.id;
+      s.append(name, pill(v.kind, 'gh-muted'), pill(v.verdict === 'accept' ? '✓ accept' : '✕ reject', v.verdict === 'accept' ? 'gh-ok' : 'gh-bad'));
+      const t = document.createElement('span'); t.className = 'gh-muted'; t.textContent = v.title; s.append(t);
+      const body = document.createElement('div'); body.className = 'gh-claim-body';
+      body.append(para('What the agent said', v.agent_says),
+        para('Settings it changes', v.config, true),
+        para('Guarantees it declared it gives up', v.declared_drops),
+        para('Database settings observed (baseline, then with the change)', v.observed, true));
+      if (c.compensated_by) body.append(para('Lean statements it relies on', c.compensated_by, true));
+      if (c.refuted_by) body.append(para('Refuted by', c.refuted_by, true));
+      body.append(para('Lean results', v.compensations, true),
+        para('Conformance against the compiled spec', `${fmtInt(v.sequences)} sequences, ${fmtInt(v.operations)} operations, seed ${v.seed}\nmismatching sequences: ${fmtInt(v.mismatches)}${v.notes ? '\nnotes: ' + v.notes : ''}`, true),
+        para('Reasons for the verdict, in full', v.reasons, true),
+        para('Check time', `${fmt1(v.check_seconds)} s  (claim record: ${c.file || ''})`, true));
+      d.append(s, body);
+      return d;
+    }));
+  });
+  dash.draw('test-file-rows', (tb) => {
+    const rows = okData('test_files');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(r.file, 'gh-mono'), td(fmtInt(r.passed), 'gh-num'), td(fmtInt(r.failed), 'gh-num'), td(fmtInt(r.skipped), 'gh-num'), td(fmt1(r.seconds), 'gh-num')); return tr; }));
+  });
+
+  /* ---------- method ---------- */
+  dash.draw('interleave-rows', (tb) => {
+    const rows = okData('interleave');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(String(r.round)), td(r.order, 'gh-mono')); return tr; }));
+  });
+  dash.draw('before-reps', (el) => {
+    const rows = okData('before_reps');
+    el.textContent = rows ? rows.map((r) => fmt1(r.throughput_rps)).join(', ') : '—';
+  });
+
+  /* ---------- run 1 / Nagle ---------- */
+  dash.draw('nagle-rows', (tb) => {
+    const rows = okData('nagle');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(r.mode), td(String(r.trial), 'gh-num'), td(fmt1(r.rps), 'gh-num'), td(fmt3(r.balance_p50_ms), 'gh-num'), td(fmt3(r.open_p50_ms), 'gh-num'), td(fmt3(r.payment_p50_ms), 'gh-num')); tr.dataset.key = `${encodeURIComponent(r.mode)},${r.trial}`; return tr; }));
+  });
+  dash.draw('run1-balance', (el) => {
+    const rows = okData('run1_ops');
+    el.textContent = rows ? rows.filter((r) => r.op === 'balance').map((r) => fmt3(r.p50_ms)).join(', ') : '—';
+  });
+
+  /* ---------- profile ---------- */
+  dash.draw('profile', (el) => {
+    const rows = okData('profile');
+    el.textContent = rows ? rows.map((r) => r.text).join('\n') : '—';
+  });
+
+  /* ---------- verdicts ---------- */
+  dash.draw('verdict-rows', (tb) => {
+    const rows = okData('verdicts');
+    tb.replaceChildren(...(rows || []).map((r) => {
+      const tr = document.createElement('tr');
+      const v = document.createElement('td');
+      v.append(pill(r.verdict === 'accept' ? '✓ accept' : '✕ reject', r.verdict === 'accept' ? 'gh-ok' : 'gh-bad'));
+      const reasons = td(r.reasons || 'none');
+      if (r.lean) { const l = document.createElement('div'); l.className = 'gh-muted'; l.textContent = 'Lean: ' + r.lean; reasons.append(l); }
+      tr.append(td(r.id), td(r.kind), v, reasons, td(r.agent_says), td(fmtInt(r.operations), 'gh-num'), td(fmtInt(r.mismatches), 'gh-num'),
+        td(`${r.durable} (journal ${r.journal_mode}, synchronous ${r.synchronous})`));
+      return tr;
+    }));
+  });
+
+  /* ---------- counterexamples ---------- */
+  dash.draw('counterexamples', (el) => {
+    const rows = okData('counterexamples');
+    if (failLine(el, ['counterexamples'])) return;
+    if (!rows) { el.replaceChildren(); return; }
+    if (!rows.length) { const p = document.createElement('p'); p.className = 'gh-note'; p.textContent = 'No claim disagreed with the spec.'; el.replaceChildren(p); return; }
+    el.replaceChildren(...rows.map((r) => {
+      const box = document.createElement('div'); box.className = 'gh-ce';
+      const h = document.createElement('h3'); h.style.cssText = 'margin:0;font-size:var(--cds-font-size-body);font-weight:var(--cds-font-weight-medium)'; h.textContent = `${r.id}: ${fmtInt(r.operations)} operations`;
+      const mk = (label, text) => { const p = document.createElement('p'); p.className = 'gh-note'; p.textContent = label; const c = document.createElement('pre'); c.className = 'gh-pre'; c.style.maxHeight = '10rem'; c.style.whiteSpace = 'pre-wrap'; c.textContent = text; return [p, c]; };
+      box.append(h, ...mk('Operations', r.ops), ...mk('The spec returned', r.model), ...mk('The store returned', r.store));
+      return box;
+    }));
+  });
+
+  /* ---------- tests, mutations, findings, provenance ---------- */
+  dash.draw('test-rows', (tb) => {
+    const rows = okData('tests');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); const o = document.createElement('td'); o.append(pill(r.outcome, r.outcome === 'passed' ? 'gh-ok' : r.outcome === 'failed' ? 'gh-bad' : 'gh-warn')); tr.append(td(r.test, 'gh-mono'), o, td(fmt3(r.seconds), 'gh-num'), td(r.message)); return tr; }));
+  });
+  dash.draw('mutation-rows', (tb) => {
+    const rows = okData('mutations');
+    const cat = okData('catalog_mutations') || [];
+    tb.replaceChildren(...(rows || []).map((r) => { const m = cat.find((x) => x.mutation === r.mutation) || {}; const tr = document.createElement('tr'); const o = document.createElement('td'); o.append(pill(r.result === 'BITES' ? '✓ bites' : '✕ ' + r.result.toLowerCase(), r.result === 'BITES' ? 'gh-ok' : 'gh-bad')); tr.append(td(r.mutation), td(r.scope), o, td(r.summary, 'gh-mono'), td(m.file || '', 'gh-mono'), td(m.find || '', 'gh-mono'), td(m.replace || '', 'gh-mono'), td(m.tests || '', 'gh-mono')); return tr; }));
+  });
+  dash.draw('finding-kinds', (sel) => {
+    const rows = okData('findings') || [];
+    const current = sel.value;
+    sel.replaceChildren(new Option('All kinds', ''), ...[...new Set(rows.map((r) => r.kind))].map((k) => new Option(k, k)));
+    sel.value = current;
+    sel.onchange = () => dash.draw('finding-rows');
+  });
+  dash.draw('finding-rows', (tb) => {
+    const sel = document.getElementById('finding-kind');
+    const kind = sel ? sel.value : '';
+    const rows = (okData('findings') || []).filter((r) => !kind || r.kind === kind);
+    const cls = { finding: 'gh-ok', failure: 'gh-warn', mistake: 'gh-bad', caught: 'gh-ok' };
+    tb.replaceChildren(...rows.map((r) => { const tr = document.createElement('tr'); const k = document.createElement('td'); k.append(pill(r.kind, cls[r.kind] || 'gh-muted')); tr.append(td(r.id), td(r.date, 'gh-mono'), k, td(r.title), td(r.expected), td(r.observed), td(r.impact), td(r.evidence, 'gh-mono')); return tr; }));
+  });
+  dash.draw('env-rows', (tb) => {
+    const rows = okData('bench_env');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(r.key, 'gh-mono'), td(r.value, 'gh-mono')); return tr; }));
+  });
+  dash.draw('manifest-rows', (tb) => {
+    const rows = okData('manifest');
+    tb.replaceChildren(...(rows || []).map((r) => { const tr = document.createElement('tr'); tr.append(td(r.file, 'gh-mono'), td(r.sha256, 'gh-mono')); return tr; }));
+  });
+</script>

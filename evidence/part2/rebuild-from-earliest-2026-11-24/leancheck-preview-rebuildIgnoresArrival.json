@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "lock_sha256": "37f84597364730e7126d9a8672efde8250cd264b84329c0b1b6209403f659fb8",
+  "module": "Proofs.Retro",
+  "proof": "Proofs.Retro.rebuildIgnoresArrival",
+  "proof_file_sha256": "829b43e07398edc57f4ddd5a4d99ff125b800d0bc2738542fb1107cd78a46519",
+  "replay_reused": [],
+  "replayed_modules": [
+    "Proofs.Retro",
+    "Spec.Retro"
+  ],
+  "statement": "Spec.Retro.rebuildIgnoresArrival",
+  "toolchain": "leanprover/lean4:v4.35.0",
+  "violations": [],
+  "witness": "Proofs.Retro.rebuildIgnoresArrival_witness"
+}

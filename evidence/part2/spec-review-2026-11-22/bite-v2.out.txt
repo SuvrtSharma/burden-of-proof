@@ -1,0 +1,24 @@
+("all to excess", false)
+("principal first, stated fee first", false)
+("7x to fee", false)
+("spec effect on grid", 128, true)
+("fixed rebuildIgnoresArrival: accepted lists",
+ 361,
+ "pairs",
+ 4203,
+ "holds on all",
+ true,
+ "old statement holds on all",
+ false)
+("double reversal subjects",
+ [1, 2],
+ "live",
+ [],
+ "rebuild",
+ ({ fee := 0, principal := 0, excess := 0 },
+  [(1, { fee := 0, principal := 0, excess := 0 }), (2, { fee := 0, principal := 0, excess := 0 })]),
+ "forkSync",
+ ({ fee := 0, principal := 0, excess := 0 },
+  [(1, { fee := 0, principal := 0, excess := 0 }), (2, { fee := 0, principal := 0, excess := 0 })]),
+ "stuck",
+ false)

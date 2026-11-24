@@ -1,0 +1,16 @@
+-- Every sequence of up to n events, with distinct business times 0..n-1,
+-- reversals only of earlier non-reversal events, each target at most once.
+sequencesUpTo :: Int -> [[(Spec, Int)]]
+sequencesUpTo n = concatMap go [0 .. n]
+  where
+    go 0 = [[]]
+    go k = [ pre ++ [(s, d)]
+           | pre <- go (k - 1)
+           , d <- [0 .. n - 1], d `notElem` map snd pre
+           , s <- [Disb, Chg, Pay5, Pay20] ++ [Rev i | (i, (t, _)) <- zip [0 ..] pre, not (isRevS t), Rev i `notElem` map fst pre]
+           ]
+arrival, oracle :: [LedgerActivity] -> State
+arrival acts = stateOf (fst (applyLedgerActivities (lookupsFor acts) Nothing acts emptyLedger defaultClock)) (liveOf acts)
+oracle acts =
+  let live = sortBy (comparing laEffectiveAt) (liveOf acts)
+  in stateOf (fst (applyLedgerActivities (lookupsFor live) Nothing live emptyLedger defaultClock)) live

@@ -1,0 +1,6 @@
+id = "OPT-WAL"
+kind = "orthodox"
+title = "WAL journal, keeping synchronous=EXTRA (same as FULL in WAL)"
+agent_says = "WAL commits need fewer syncs than a rollback journal and stay durable at FULL or above."
+config = { journal_mode = "WAL" }
+drops = []

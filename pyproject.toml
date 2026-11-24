@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["burden_of_proof"]
+
+[project]
+name = "burden-of-proof"
+version = "0.0.0"
+description = "Tooling that turns AI agents' claims about software into evidence (ADR-0016)."
+requires-python = ">=3.14"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

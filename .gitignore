@@ -1,0 +1,27 @@
+# Lean / Lake build output
+.lake/
+build/
+lake-packages/
+
+# Local database clusters and logs (scripts/pg/)
+.local/
+
+# Python (tooling, ADR-0016)
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Node (tooling)
+node_modules/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Local benchmark scratch (reports that count as evidence go in bench/reports/)
+bench/tmp/

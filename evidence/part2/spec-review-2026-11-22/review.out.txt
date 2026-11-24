@@ -1,0 +1,10 @@
+("tie: rebuild",
+ { fee := 0, principal := 10, excess := 5 },
+ "forkSync",
+ { fee := 0, principal := 5, excess := 0 },
+ "stuck",
+ false)
+("perm: accepted p1 = p1", true, "accepted p2 = p2", true)
+("perm: same balance", true, "same full state", false)
+("perm: impacts p1", [1, 2], "impacts p2", [2, 1])
+("sort check: lists", 781, "isort = mergeSort (before)", true, "isort = mergeSort (eff only, pairs)", true)

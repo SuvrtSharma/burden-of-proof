@@ -1,0 +1,10 @@
+sequences: 3432
+committed spec: differ from rebuild 150; posted adjustments 576; final fee or excess negative 42
+causal READING 8: differ from rebuild 156; posted adjustments 576; final fee or excess negative 50
+results changed: 50 (all posted adjustments: True)
+  were wrong, now agree: 22
+  were right, now disagree: 28
+  wrong both ways, differently: 0
+  became negative: 16; stopped being negative: 8
+smallest now-disagree: [{ id := 1, eff := 1, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }, { id := 2, eff := 0, kind := Spec.Retro.Kind.charge 3 }, { id := 3, eff := 1, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }]
+smallest now-agree:    [{ id := 1, eff := 2, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }, { id := 2, eff := 0, kind := Spec.Retro.Kind.charge 3 }, { id := 3, eff := 1, kind := Spec.Retro.Kind.charge 3 }]

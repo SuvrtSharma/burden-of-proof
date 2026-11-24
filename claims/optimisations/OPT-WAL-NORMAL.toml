@@ -1,0 +1,6 @@
+id = "OPT-WAL-NORMAL"
+kind = "unorthodox"
+title = "WAL with synchronous=NORMAL"
+agent_says = "Widely recommended: WAL is always consistent with synchronous=NORMAL, and it is much faster."
+config = { journal_mode = "WAL", synchronous = "NORMAL" }
+drops = []   # the agent didn't declare any; the observed check decides

@@ -1,0 +1,8 @@
+id = "LEDGER-MATCH-SETTLES-MAXIMUM"
+kind = "invariant"
+says = "Settlement settles as much as possible: the total applied is the smaller of everything owed and every advance. (Allocating nothing does not satisfy this.)"
+statement = "Spec.matchSettlesMaximum"
+proof = "Proofs.Ledger.matchSettlesMaximum"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

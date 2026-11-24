@@ -1,0 +1,9 @@
+On the proposed spec (causal READING 8), sequences of up to 3 events:
+  reading 'orig': differ from rebuild 156
+  reading 'recompute': differ from rebuild 96
+  reading 'sumcurrent': differ from rebuild 96
+differ under all three readings: 96; with distinct dates: 39; and no reversal: 7; and no adjustments under any reading: 0
+smallest, distinct dates, no reversal: [{ id := 1, eff := 1, kind := pay 5 (feeFirst) }, { id := 2, eff := 0, kind := charge 3 }, { id := 3, eff := 2, kind := pay 5 (feeFirst) }]
+    orig: stuck false | adj 1 | state ({ fee := -3, principal := 0, excess := 4 }, [(1, { fee := -3, principal := 0, excess := 2 }), (2, { fee := 3, principal := 0, excess := 0 }), (3, { fee := -3, principal := 0, excess := 2 })]) | eqRebuild false
+    recompute: stuck false | adj 1 | state ({ fee := -3, principal := 0, excess := 4 }, [(1, { fee := -3, principal := 0, excess := 2 }), (2, { fee := 3, principal := 0, excess := 0 }), (3, { fee := -3, principal := 0, excess := 2 })]) | eqRebuild false
+    sumcurrent: stuck false | adj 1 | state ({ fee := -3, principal := 0, excess := 4 }, [(1, { fee := -3, principal := 0, excess := 2 }), (2, { fee := 3, principal := 0, excess := 0 }), (3, { fee := -3, principal := 0, excess := 2 })]) | eqRebuild false

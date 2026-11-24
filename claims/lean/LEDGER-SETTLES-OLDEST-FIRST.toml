@@ -1,0 +1,8 @@
+id = "LEDGER-SETTLES-OLDEST-FIRST"
+kind = "invariant"
+says = "Open bills are always in a fixed order, oldest date first with ties broken by bill id, so the same data always settles the same way (KT bug pattern 4)."
+statement = "Spec.settlesOldestFirst"
+proof = "Proofs.Ledger.settlesOldestFirst"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

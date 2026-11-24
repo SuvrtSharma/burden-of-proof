@@ -1,0 +1,18 @@
+id = "OPT-CAP-SETTLE-SCAN"
+kind = "unorthodox"
+title = "Read at most 20 open bills when settling a payment"
+agent_says = "Payments are rarely larger than 20 bills, so LIMIT 20 on the open-bill query is safe and avoids long scans."
+config = { settle_scan_cap = 20 }
+drops = ["app.full_open_bill_scan"]
+
+[[compensated_by]]
+rule = "LEDGER-SETTLE-OLDEST-FIRST"
+statement = "Spec.cappedMatchAgrees"
+proof = "Proofs.Ledger.cappedMatchAgrees"
+module = "Proofs.Ledger"
+
+# Known refutation in the spec library; checked and reported if it holds.
+[refuted_by]
+statement = "Spec.cappedMatchDisagrees"
+proof = "Proofs.Ledger.cappedMatchDisagrees"
+module = "Proofs.Ledger"

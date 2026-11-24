@@ -1,0 +1,9 @@
+=== committed
+pairs tested: 119100, append-only violations: 0
+no violation
+=== proposed-noncausal
+pairs tested: 119100, append-only violations: 7944
+smallest violation: ([{ id := 1, eff := 1, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }, { id := 2, eff := 0, kind := Spec.Retro.Kind.charge 3 }], { id := 3, eff := 9, kind := Spec.Retro.Kind.charge 3 })
+=== proposed-causal
+pairs tested: 119100, append-only violations: 0
+no violation

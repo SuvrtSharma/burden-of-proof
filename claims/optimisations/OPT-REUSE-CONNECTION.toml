@@ -1,0 +1,6 @@
+id = "OPT-REUSE-CONNECTION"
+kind = "orthodox"
+title = "Keep one SQLite connection per server thread instead of one per request"
+agent_says = "Opening a connection and setting pragmas on every request is wasted work; results are unchanged."
+config = { connection_per_request = false }
+drops = []

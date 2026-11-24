@@ -1,0 +1,8 @@
+id = "LEDGER-CACHED-BALANCE-AGREES"
+kind = "invariant"
+says = "A running balance kept per party always equals the balance worked out from the facts, through bills, payments and reversals."
+statement = "Spec.cachedBalanceAgrees"
+proof = "Proofs.Ledger.cachedBalanceAgrees"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = ["OPT-CACHED-BALANCE"]

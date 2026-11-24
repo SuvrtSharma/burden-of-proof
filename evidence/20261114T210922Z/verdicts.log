@@ -1,0 +1,7 @@
+OPT-CACHED-BALANCE: accept []
+OPT-CAP-SETTLE-SCAN: reject ['compensation_unproved', 'refuted_in_lean', 'differs_from_model']
+OPT-INDEX-PARTY: accept []
+OPT-REUSE-CONNECTION: accept []
+OPT-WAL-NORMAL: reject ['undeclared_drop', 'drop_without_compensation']
+OPT-WAL: accept []
+wrote /out/verdicts.json

@@ -1,0 +1,12 @@
+id = "OPT-CACHED-BALANCE"
+kind = "unorthodox"
+title = "Store a running balance per party instead of summing rows"
+agent_says = "Keep parties.balance up to date on every bill and payment, in the same transaction; reads become one row lookup."
+config = { cached_balance = true }
+drops = ["app.derived_balance"]
+
+[[compensated_by]]
+rule = "LEDGER-BALANCE-IS-DERIVED"
+statement = "Spec.cachedBalanceAgrees"
+proof = "Proofs.Ledger.cachedBalanceAgrees"
+module = "Proofs.Ledger"

@@ -1,0 +1,8 @@
+id = "LEDGER-REJECTS-NON-POSITIVE"
+kind = "invariant"
+says = "A bill or payment of zero or a negative amount is rejected and changes nothing."
+statement = "Spec.rejectsNonPositive"
+proof = "Proofs.Ledger.rejectsNonPositive"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

@@ -1,0 +1,23 @@
+[
+  {
+    "run_id": "20261107T090049Z",
+    "started_at": "2026-11-07T09:00:49+00:00",
+    "commit": "91552918cf557b48d119380be3e8de975e7b0a9b",
+    "dirty": true,
+    "valid": false,
+    "invalid_because": "Server left Nagle's algorithm on: every small response waited ~40 ms for a delayed ACK, so the benchmark measured TCP, not the database (F-016). Kept as evidence."
+  },
+  {
+    "run_id": "20261107T092243Z",
+    "started_at": "2026-11-07T09:22:43+00:00",
+    "commit": "91552918cf557b48d119380be3e8de975e7b0a9b",
+    "dirty": true
+  },
+  {
+    "run_id": "20261114T210922Z",
+    "started_at": "2026-11-14T21:14:02+00:00",
+    "commit": "aa01b81cc90f1b381f73622bf2c8d27d3230b13f",
+    "dirty": true,
+    "valid": true
+  }
+]

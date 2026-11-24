@@ -1,0 +1,9 @@
+{
+  "files": {
+    "Spec.lean": "e447a833c6ed5415991fe0481a75f411000bc31fab95a9c27cfe30cf1f089db9",
+    "Spec/Ledger.lean": "45b30e058576360bf50ac35fbeb87a77c200ca28852cb2c02b49ce1c78b8401c",
+    "lakefile.toml": "18905056986393df1aa5e0d13cc6a82a5ab378d9d3c833e5331e5571e20297a1",
+    "lean-toolchain": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c"
+  },
+  "version": 1
+}

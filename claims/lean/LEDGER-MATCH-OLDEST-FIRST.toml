@@ -1,0 +1,8 @@
+id = "LEDGER-MATCH-OLDEST-FIRST"
+kind = "invariant"
+says = "Settlement pays oldest first: a bill receives anything only if every bill before it in the order is paid in full."
+statement = "Spec.matchPaysOldestFirst"
+proof = "Proofs.Ledger.matchPaysOldestFirst"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

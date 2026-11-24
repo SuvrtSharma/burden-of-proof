@@ -1,0 +1,5 @@
+Mutation (scratch copy only): forkSyncState replaced by the rebuild's state, as if fork-and-sync were correct. Every refutation must then fail to build.
+error: Proofs/Retro.lean:31:67: Tactic `decide` proved that the proposition
+error: Proofs/Retro.lean:74:82: Tactic `decide` proved that the proposition
+error: Proofs/Retro.lean:93:75: Tactic `decide` proved that the proposition
+error: build failed

@@ -1,0 +1,17 @@
+name = "godshand"
+defaultTargets = ["Spec", "Proofs", "ledgermodel"]
+
+# The reviewed, hash-locked spec (ADR-0004). Locked by spec.lock.json.
+[[lean_lib]]
+name = "Spec"
+
+# Proofs of claims against the spec.
+[[lean_lib]]
+name = "Proofs"
+globs = ["Proofs.+"]
+
+# The spec's own definitions, compiled into a program that the conformance
+# harness drives with JSON operations (ADR-0007).
+[[lean_exe]]
+name = "ledgermodel"
+root = "LedgerModel"

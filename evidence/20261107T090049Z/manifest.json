@@ -1,0 +1,52 @@
+{
+  "run_id": "20261107T090049Z",
+  "git": {
+    "commit": "91552918cf557b48d119380be3e8de975e7b0a9b",
+    "dirty": true,
+    "dirty_files": [
+      "M bench/loadgen.py",
+      " M bench/run.py",
+      " M docs/adr/0019-reference-ledger-api.md",
+      " M docs/adr/README.md",
+      " M godshand/differential.py",
+      "?? .dockerignore",
+      "?? bench/docker_run.py",
+      "?? bench/verdicts.py",
+      "?? dashboard/",
+      "?? docker/",
+      "?? docs/adr/0021-isolated-environment-wsl-docker.md",
+      "?? evidence/"
+    ]
+  },
+  "files": {
+    "benchmark.json": "9216e47e786b81ffd19715349c1f8434e34e85f3acaf42bfea9a214928e2a390",
+    "samples/ALL-ACCEPTED-rep1.csv.gz": "c682f75182897676b8418aa4194c2d373a213dd2ccbbb4a46a229882b90e92e8",
+    "samples/ALL-ACCEPTED-rep2.csv.gz": "a834813af9c263da62bf57db55debabde1882570d9feb693ca48b9eafe15841d",
+    "samples/ALL-ACCEPTED-rep3.csv.gz": "24922fb64388657cc2804fae126162e150b3f1fc63e88f986c63435c478943f7",
+    "samples/OPT-CACHED-BALANCE-rep1.csv.gz": "bffcb6bd90101f9e53528cd3e7fdb94f2dfdd36b298bf02c839363010afda4a9",
+    "samples/OPT-CACHED-BALANCE-rep2.csv.gz": "f55d806b140fdf8fdc165b793b3ded34f1a38d3eceedb106c3158d6dc81644ec",
+    "samples/OPT-CACHED-BALANCE-rep3.csv.gz": "91b7946f5fbef62120044f75c5f72ba1aab98de6028324bcef71d814b84dde22",
+    "samples/OPT-CAP-SETTLE-SCAN-rep1.csv.gz": "804a88b3fe094a4120680fc8b59c241a710f324edd23c12dae59f1b0f232b584",
+    "samples/OPT-CAP-SETTLE-SCAN-rep2.csv.gz": "22e9700c9093748687e0505716314e3b6869ac5b722b4faa4698d1b67e858030",
+    "samples/OPT-CAP-SETTLE-SCAN-rep3.csv.gz": "666756b779ce8e88068acce88b73c69f5bd7e5997fd05c51113953cc8513c755",
+    "samples/OPT-INDEX-PARTY-rep1.csv.gz": "b5f1f559977f66600569d78ea57bd74b00ffffd9ae19b43b9039cef3c90b633e",
+    "samples/OPT-INDEX-PARTY-rep2.csv.gz": "9023067d019acc03b73b0af7f8b370276041f96910f4303654809e0d7ddd64e5",
+    "samples/OPT-INDEX-PARTY-rep3.csv.gz": "02543a1fa46029e509f87d3fa0c3ba9c4900129b4b41e5a8ed4e0df92a8144c2",
+    "samples/OPT-REUSE-CONNECTION-rep1.csv.gz": "170bbd11dae864c269eeaa59a1a30b6bc744bca510fd9ece51da779b5bdfbf71",
+    "samples/OPT-REUSE-CONNECTION-rep2.csv.gz": "f88a9bb1d5a87cb83d8b7bab6084df8123b538d7d07370f5cd1cea63ca4fc15e",
+    "samples/OPT-REUSE-CONNECTION-rep3.csv.gz": "f5dfc5ddf39d5217e709c8c02f53a4eb76035467d45fff3400a4373ec22a5dd5",
+    "samples/OPT-WAL-NORMAL-rep1.csv.gz": "397ac569a7b23559958dade7758914968f6bd827069c633576d4cdcf9f882a44",
+    "samples/OPT-WAL-NORMAL-rep2.csv.gz": "c7047970c6f00e87a86a00b80ac216a26e1ffe23708e19501de005e803a56548",
+    "samples/OPT-WAL-NORMAL-rep3.csv.gz": "0f7d3e9621dad2b43760fe3dd01caba6e3400a3653739f2b6d99f2f672b18cba",
+    "samples/OPT-WAL-rep1.csv.gz": "89e642396bd565aad8eaa56ff5fcf69b88de06f6988e214b322b9d0bbd8af89c",
+    "samples/OPT-WAL-rep2.csv.gz": "c2445e600290d40be990cf9b195824231b1b05eba5b6f1b3be47e910c8ff5e43",
+    "samples/OPT-WAL-rep3.csv.gz": "4ff99e920d1e2302d8a931a6ea6f270cd394f4d13e664d80e4e7b6d9e8fba8aa",
+    "samples/baseline-rep1.csv.gz": "33035fd6ea7daf7956ceabb3d14889a1c523345551a6d23dd8758bbdb65c2cc5",
+    "samples/baseline-rep2.csv.gz": "9aad354ff9a96cf8f8b5a8b990675f958d4b901095653d7d9429906c4adb972f",
+    "samples/baseline-rep3.csv.gz": "47a92af66c41e69db28cbc18f9570752c2cbbd17c1a1b6a927d32bdf940f6896",
+    "tests.log": "e935d2e0164d98461e0d6aced6ef5f525e4e9b1365b991d6269b7cbdb56ecdb2",
+    "tests.xml": "ae0cc33c099ba78167cb77c0aa49f197a9079168841732b0fdec4718a9c5173d",
+    "verdicts.json": "ad21a04b30a4485bdee6364ba30e6baff853b8ec9caaf4cf3cb70568ecfcda3d",
+    "verdicts.log": "b60863aef57ba8aa6628b361ebe9b92a4f19bbb5a93098edc4ac6294644f61ae"
+  }
+}

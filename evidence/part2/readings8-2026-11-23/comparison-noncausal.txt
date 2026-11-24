@@ -1,0 +1,10 @@
+sequences: 3432
+before: differ from rebuild 150, posted adjustments 576, stuck 0
+after:  differ from rebuild 156, posted adjustments 576, stuck 0
+sequences whose forkSync result changed: 50 (all of them posted adjustments: True)
+  were wrong, now agree with the rebuild: 22
+  were right, now disagree: 28
+  wrong before and after, differently: 0
+smallest changed case:
+  before: [{ id := 1, eff := 2, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }, { id := 2, eff := 0, kind := Spec.Retro.Kind.charge 3 }, { id := 3, eff := 1, kind := Spec.Retro.Kind.charge 3 }] | stuck false | adj 2 | state ({ fee := 0, principal := 0, excess := -1 }, [(1, { fee := -6, principal := 0, excess := -1 }), (2, { fee := 3, principal := 0, excess := 0 }), (3, { fee := 3, principal := 0, excess := 0 })]) | eqRebuild false
+  after:  [{ id := 1, eff := 2, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }, { id := 2, eff := 0, kind := Spec.Retro.Kind.charge 3 }, { id := 3, eff := 1, kind := Spec.Retro.Kind.charge 3 }] | stuck false | adj 2 | state ({ fee := 1, principal := 0, excess := 0 }, [(1, { fee := -5, principal := 0, excess := 0 }), (2, { fee := 3, principal := 0, excess := 0 }), (3, { fee := 3, principal := 0, excess := 0 })]) | eqRebuild true

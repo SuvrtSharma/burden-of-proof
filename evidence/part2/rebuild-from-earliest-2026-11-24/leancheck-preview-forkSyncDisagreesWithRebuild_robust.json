@@ -1,0 +1,17 @@
+{
+  "accepted": true,
+  "axioms": [],
+  "lock_sha256": "37f84597364730e7126d9a8672efde8250cd264b84329c0b1b6209403f659fb8",
+  "module": "Proofs.Retro",
+  "proof": "Proofs.Retro.forkSyncDisagreesWithRebuild_robust",
+  "proof_file_sha256": "829b43e07398edc57f4ddd5a4d99ff125b800d0bc2738542fb1107cd78a46519",
+  "replay_reused": [],
+  "replayed_modules": [
+    "Proofs.Retro",
+    "Spec.Retro"
+  ],
+  "statement": "Spec.Retro.forkSyncDisagreesWithRebuild",
+  "toolchain": "leanprover/lean4:v4.35.0",
+  "violations": [],
+  "witness": null
+}

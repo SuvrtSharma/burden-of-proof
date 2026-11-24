@@ -1,0 +1,8 @@
+id = "LEDGER-NEVER-OVER-APPLIED"
+kind = "invariant"
+says = "No payment is ever applied beyond its amount."
+statement = "Spec.neverOverApplied"
+proof = "Proofs.Ledger.neverOverApplied"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

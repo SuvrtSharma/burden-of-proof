@@ -1,0 +1,8 @@
+id = "LEDGER-PARTIES-ISOLATED"
+kind = "access"
+says = "An operation about one party changes nothing about any other party: not its bills, what they owe, its payments, their advances, or its balance."
+statement = "Spec.partiesIsolated"
+proof = "Proofs.Ledger.partiesIsolated"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

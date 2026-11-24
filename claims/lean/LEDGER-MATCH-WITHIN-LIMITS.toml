@@ -1,0 +1,8 @@
+id = "LEDGER-MATCH-WITHIN-LIMITS"
+kind = "invariant"
+says = "Settlement never pays a bill more than it owes or takes more from a payment than its advance, and every allocation is positive and names an offered bill and payment."
+statement = "Spec.matchWithinLimits"
+proof = "Proofs.Ledger.matchWithinLimits"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

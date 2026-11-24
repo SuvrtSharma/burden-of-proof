@@ -1,0 +1,6 @@
+id = "OPT-INDEX-PARTY"
+kind = "orthodox"
+title = "Index bills(party_id, id) and payments(party_id)"
+agent_says = "Balance sums and oldest-first settlement scan every bill; an index on party avoids the scan and the sort. Indexes never change results."
+config = { index_party = true }
+drops = []

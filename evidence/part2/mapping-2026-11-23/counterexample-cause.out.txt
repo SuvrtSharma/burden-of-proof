@@ -1,0 +1,3 @@
+("rebuild", { fee := 0, principal := 10, excess := 10 }, "forkSync", { fee := 0, principal := 0, excess := 0 })
+("ledger after two arrivals", [(1, 2, 10, 10), (2, 0, 10, 20)])
+("forkAtDate .. 1", [(2, 0, 20)], "current of fork", 20, "sum of its deltas", 10)

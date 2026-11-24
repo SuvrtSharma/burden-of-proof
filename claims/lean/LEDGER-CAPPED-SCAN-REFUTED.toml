@@ -1,0 +1,8 @@
+id = "LEDGER-CAPPED-SCAN-REFUTED"
+kind = "refutation"
+says = "Reading only the first k open bills does NOT settle like reading all of them (a concrete counterexample)."
+statement = "Spec.cappedMatchDisagrees"
+proof = "Proofs.Ledger.cappedMatchDisagrees"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = ["OPT-CAP-SETTLE-SCAN"]

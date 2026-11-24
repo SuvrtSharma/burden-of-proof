@@ -1,0 +1,3 @@
+("last-appended entry's date", some 0, "latest date (our reading)", some 2)
+("payment applied at tail: balance after", { fee := 0, principal := 0, excess := 0 })
+("our reading (forkSync)", { fee := 0, principal := 0, excess := 0 }, "adjustments made", 0)

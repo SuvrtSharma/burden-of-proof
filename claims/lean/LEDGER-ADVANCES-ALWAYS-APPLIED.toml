@@ -1,0 +1,8 @@
+id = "LEDGER-ADVANCES-ALWAYS-APPLIED"
+kind = "invariant"
+says = "Advances are applied automatically: a party never has an open bill and an unapplied advance at the same time."
+statement = "Spec.advancesAlwaysApplied"
+proof = "Proofs.Ledger.advancesAlwaysApplied"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

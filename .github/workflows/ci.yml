@@ -1,0 +1,40 @@
+# Runs the checker's own tests on every push and pull request (ADR-0018).
+# Agents edit the working tree; this runs outside it, from the pushed commit.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install elan (toolchain comes from lean-toolchain)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o elan-init.sh
+          sh elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install Python tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Build the Lean checker and the ledger spec
+        run: |
+          (cd tools/leancheck && lake build)
+          lake build
+
+      - name: Tests
+        run: python -m pytest -q

@@ -1,0 +1,8 @@
+id = "LEDGER-VIEWS-AGREE"
+kind = "invariant"
+says = "Every view of a balance agrees: billed minus paid equals what the bills still owe minus the unapplied advances (KT bug pattern 3)."
+statement = "Spec.viewsAgree"
+proof = "Proofs.Ledger.viewsAgree"
+module = "Proofs.Ledger"
+spec_version = 2
+used_by = []

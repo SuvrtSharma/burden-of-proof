@@ -1,0 +1,14 @@
+../evidence/part2/spec-review-2026-11-22/bite.lean:4:17: warning: Variable name `b` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _b
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+../evidence/part2/spec-review-2026-11-22/bite.lean:7:21: warning: Variable name `b` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _b
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'t3' depends on axioms: [propext, Quot.sound]
+bite exit: 0

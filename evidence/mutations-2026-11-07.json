@@ -1,0 +1,151 @@
+{
+  "about": "Raw output of the mutation scripts, copied unedited. Each row removes one check; BITES means its tests failed.",
+  "runs": [
+    {
+      "scope": "Lean check pipeline (tools/leancheck, godshand/leancheck.py, godshand/speclock.py)",
+      "source_sha256": "ebbf7a8269d1bf43ebdddf9cd21d4e71f134d87bcfde61e067ec664cc66c6b0c",
+      "rows": [
+        {
+          "mutation": "M1 no kernel replay",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 32.48s"
+        },
+        {
+          "mutation": "M2 axiom allowlist ignored",
+          "result": "BITES",
+          "summary": "4 failed, 28 deselected in 56.92s"
+        },
+        {
+          "mutation": "M3 allowlist emptied",
+          "result": "BITES",
+          "summary": "1 failed, 5 passed, 26 deselected in 48.04s"
+        },
+        {
+          "mutation": "M4 implemented_by not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 38.75s"
+        },
+        {
+          "mutation": "M5 extern not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 36.15s"
+        },
+        {
+          "mutation": "M6 proof type not compared",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 30.56s"
+        },
+        {
+          "mutation": "M7 statement module not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 30.71s"
+        },
+        {
+          "mutation": "M8 statement deps not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 30.34s"
+        },
+        {
+          "mutation": "M9 lock not verified by pipeline",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 14.60s"
+        },
+        {
+          "mutation": "M10 hashing broken",
+          "result": "BITES",
+          "summary": "3 failed, 5 passed, 24 deselected in 0.41s"
+        },
+        {
+          "mutation": "M11 lakefile not locked",
+          "result": "BITES",
+          "summary": "2 failed, 30 deselected in 0.30s"
+        },
+        {
+          "mutation": "N1 vacuity guard off",
+          "result": "BITES",
+          "summary": "4 failed, 28 deselected in 46.31s"
+        },
+        {
+          "mutation": "N2 witness type not compared",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 31.29s"
+        },
+        {
+          "mutation": "N3 witness hygiene ignored",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 32.26s"
+        },
+        {
+          "mutation": "N4 no second kernel",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 36.16s"
+        },
+        {
+          "mutation": "N5 statement type not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 32.89s"
+        },
+        {
+          "mutation": "N6 proof module root not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 31.02s"
+        },
+        {
+          "mutation": "N7 theorem kind not checked",
+          "result": "BITES",
+          "summary": "1 failed, 31 deselected in 35.25s"
+        },
+        {
+          "mutation": "N8 build failure ignored",
+          "result": "BITES",
+          "summary": "2 failed, 30 deselected in 29.22s"
+        }
+      ],
+      "restored": true,
+      "after": "32 passed in 148.60s (0:02:28)"
+    },
+    {
+      "scope": "optimisation tooling, reference ledger and refutation exemption",
+      "source_sha256": "540aba741e26531d74ee88256be1e96007f2c0879610f1212ba56be048bcb724",
+      "rows": [
+        {
+          "mutation": "R1 refutation exemption removed",
+          "result": "BITES",
+          "summary": "2 failed, 50 deselected in 45.43s"
+        },
+        {
+          "mutation": "D1 differential never compares",
+          "result": "BITES",
+          "summary": "2 failed, 1 skipped, 49 deselected in 14.59s"
+        },
+        {
+          "mutation": "D2 durability rule always true",
+          "result": "BITES",
+          "summary": "2 failed, 50 deselected in 19.21s"
+        },
+        {
+          "mutation": "D3 undeclared drop ignored",
+          "result": "BITES",
+          "summary": "1 failed, 51 deselected in 11.15s"
+        },
+        {
+          "mutation": "D4 unproved compensation ignored",
+          "result": "BITES",
+          "summary": "1 failed, 51 deselected in 8.47s"
+        },
+        {
+          "mutation": "D5 server answers balance wrongly",
+          "result": "BITES",
+          "summary": "1 failed, 51 deselected in 0.97s"
+        },
+        {
+          "mutation": "D6 money validation off",
+          "result": "BITES",
+          "summary": "5 failed, 1 passed, 46 deselected in 0.68s"
+        }
+      ],
+      "restored": true,
+      "after": "50 passed, 2 skipped in 255.85s (0:04:15)"
+    }
+  ]
+}

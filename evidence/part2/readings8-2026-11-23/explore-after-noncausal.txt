@@ -1,0 +1,42 @@
+false
+true
+({ fee := 0, principal := 99100000, excess := 0 },
+ [(123, { fee := 0, principal := 100000000, excess := 0 }),
+  (234, { fee := 0, principal := 0, excess := 0 }),
+  (456, { fee := 0, principal := -500000, excess := 0 }),
+  (768, { fee := 0, principal := -400000, excess := 0 })])
+5
+"ids in arrival order, length <= 3: 3325 sequences, 0 ran out of fuel, 156 differ from the rebuild"
+"ids against arrival order, length <= 3: 3325 sequences, 0 ran out of fuel, 891 differ from the rebuild"
+some [{ id := 1, eff := 1, kind := Spec.Retro.Kind.disburse 10 },
+ { id := 2, eff := 0, kind := Spec.Retro.Kind.disburse 10 },
+ { id := 3, eff := 0, kind := Spec.Retro.Kind.pay 20 (Spec.Retro.Alloc.feeFirst) }]
+some [{ id := 50, eff := 0, kind := Spec.Retro.Kind.disburse 10 },
+ { id := 49, eff := 0, kind := Spec.Retro.Kind.pay 5 (Spec.Retro.Alloc.feeFirst) }]
+"ids in arrival order, distinct timestamps, length <= 3: 829 sequences, 0 ran out of fuel, 54 differ from the rebuild"
+some [{ id := 1, eff := 2, kind := Spec.Retro.Kind.disburse 10 },
+ { id := 2, eff := 0, kind := Spec.Retro.Kind.disburse 10 },
+ { id := 3, eff := 1, kind := Spec.Retro.Kind.pay 20 (Spec.Retro.Alloc.feeFirst) }]
+[{ kind := Spec.Retro.EntryKind.direct,
+   source := 1,
+   eff := 2,
+   delta := { fee := 0, principal := 10, excess := 0 },
+   running := { fee := 0, principal := 10, excess := 0 } },
+ { kind := Spec.Retro.EntryKind.direct,
+   source := 2,
+   eff := 0,
+   delta := { fee := 0, principal := 10, excess := 0 },
+   running := { fee := 0, principal := 20, excess := 0 } },
+ { kind := Spec.Retro.EntryKind.direct,
+   source := 3,
+   eff := 1,
+   delta := { fee := 0, principal := -20, excess := 0 },
+   running := { fee := 0, principal := 0, excess := 0 } }]
+({ fee := 0, principal := 0, excess := 0 },
+ [(1, { fee := 0, principal := 10, excess := 0 }),
+  (2, { fee := 0, principal := 10, excess := 0 }),
+  (3, { fee := 0, principal := -20, excess := 0 })])
+({ fee := 0, principal := 10, excess := 10 },
+ [(1, { fee := 0, principal := 10, excess := 0 }),
+  (2, { fee := 0, principal := 10, excess := 0 }),
+  (3, { fee := 0, principal := -10, excess := 10 })])

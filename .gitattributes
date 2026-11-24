@@ -1,0 +1,3 @@
+# Store and check out text as LF everywhere. Spec files are hash-locked
+# (ADR-0004), so their bytes must not change with the OS or git settings.
+* text=auto eol=lf

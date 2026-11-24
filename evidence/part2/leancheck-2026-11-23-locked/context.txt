@@ -1,0 +1,5 @@
+leancheck against the owner's lock, project part2, commit 711adf6
+lock sha256 855d0ae57ca1957ba1663d2b40cb9a2e1d354d5983c471b42c957b5a5c0e3a4d
+Spec/Retro.lean sha256 56f210da46e80e63e69dcc92bb1e7a67869e7902a34f4fd1f430ace194af2d07
+Proofs/Retro.lean sha256 00b7ebe02e91fb0d7b47f71290a84cfc78c0bbcab3a5635391353e7dab5f3f2e (working tree, two checker-form theorems added after 711adf6)
+ok
